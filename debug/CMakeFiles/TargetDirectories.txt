@@ -1,0 +1,3 @@
+/home/ilyes/Programming-Projects/PROJECTS/Tetris/debug/CMakeFiles/Tetris95.dir
+/home/ilyes/Programming-Projects/PROJECTS/Tetris/debug/CMakeFiles/edit_cache.dir
+/home/ilyes/Programming-Projects/PROJECTS/Tetris/debug/CMakeFiles/rebuild_cache.dir

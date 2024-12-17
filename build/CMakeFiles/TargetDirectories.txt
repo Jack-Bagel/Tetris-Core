@@ -1,0 +1,3 @@
+/home/ilyes/Programming-Projects/PROJECTS/TetrisCore/build/CMakeFiles/TetrisCore.dir
+/home/ilyes/Programming-Projects/PROJECTS/TetrisCore/build/CMakeFiles/edit_cache.dir
+/home/ilyes/Programming-Projects/PROJECTS/TetrisCore/build/CMakeFiles/rebuild_cache.dir
