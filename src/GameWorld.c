@@ -1,8 +1,9 @@
 #include <SDL2/SDL_image.h>
 #include <stdbool.h>
-#include "SceneHandler.h"
+#include "TetrisHandler.h"
+#include "TetrisRenderer.h"
+#include "TetrisLogic.h"
 #include "GameWorld.h"
-#include "SceneRenderer.h"
 
 #define SCREEN_WIDTH 1200
 #define SCREEN_HEIGHT 1000
@@ -24,9 +25,12 @@ bool initialize_game_world() {
     is_running = true;
     p_window = SDL_CreateWindow("Tetris 95", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
     p_renderer = SDL_CreateRenderer(p_window, -1, SDL_RENDERER_ACCELERATED);
-    init_tetris_scene();
-    init_tetris_scene();
     register_textures(p_renderer);
+
+
+    if (!initialize_tetris_scene()) {
+        printf("Failed to initialize Tetris Scene\n");
+    }
 
     if(p_window == NULL) {
         printf("Failed to create window\n");
@@ -41,28 +45,11 @@ bool initialize_game_world() {
     return 0;
 }
 
-bool event(bool *p_is_running) {
-    SDL_Event current_event;
-    
-    while (SDL_PollEvent(&current_event) != 0) {
-        switch (current_event.type) {
-            case SDL_QUIT:
-                *p_is_running = false;
-                return false;
-
-            case SDL_KEYDOWN:
-                // *p_is_running = false;
-                return false;
-        }
-    }
-    return true;
-}
-
 bool run_game_world() {
 
     while (is_running) {
         // event(&is_running);
-        place_blocks_on_screen(p_window, p_renderer);
+        place_blocks_on_screen(p_window, p_renderer, &is_running);
     	// SDL_Delay(100);
     }
 

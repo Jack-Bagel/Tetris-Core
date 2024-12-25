@@ -19,10 +19,11 @@ set(PROJECT_SOURCE_FILES
     src/GameWorld.c
     src/Pieces.c
     src/TetrisTime.c
+    src/TetrisUtils.c
 
-    src/scene/Scene.c
-    src/scene/SceneHandler.c
-    src/scene/SceneRenderer.c
+    src/scene/TetrisHandler.c
+    src/scene/TetrisLogic.c
+    src/scene/TetrisRenderer.c
 )
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON) # Fixes includes path

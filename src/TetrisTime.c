@@ -2,7 +2,7 @@
 #include <SDL_timer.h>
 #include <stdio.h>
 
-#define TICK_INTERVAL 500
+#define TICK_INTERVAL 200
 void init_tetris_time() {
     counter = 0;
     time_since_reset = 0;
