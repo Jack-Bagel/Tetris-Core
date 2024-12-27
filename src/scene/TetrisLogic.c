@@ -11,8 +11,7 @@
 #include <time.h>
 
 //global 
-bool game_start;
-int random_seed;
+bool g_game_start;
 
 bool initialize_tetris_scene() {
     const int empty_grid[BOARD_HEIGHT][BOARD_WIDTH] = {0};
@@ -22,8 +21,12 @@ bool initialize_tetris_scene() {
     memcpy(m_last_tetris_grid.grid, m_tetris_grid.grid, sizeof(int) * BOARD_HEIGHT * BOARD_WIDTH);
     memcpy(m_falling_piece_grid.grid, empty_grid, sizeof(int) * BOARD_HEIGHT * BOARD_WIDTH);
 
-    game_start = false;
+    g_game_start = false;
     m_offset = 6;
+    m_pressed_down = false;
+    m_points = 0;
+    m_lines_cleared = 0;
+    m_current_level = 0;
     return true; // If everything initialized properly (TODO: add a check)
 }
 
@@ -37,8 +40,6 @@ void init_tetris_edges(TetrisGrid *p_grid) {
     }
 
     for (int j = 0; j < BOARD_WIDTH; j++) {
-        // p_grid->grid[0][j] = GREY;
-        // p_grid->grid[1][j] = GREY;
         p_grid->grid[BOARD_HEIGHT - 1][j] = GREY;
     }
 }
@@ -61,6 +62,10 @@ Piece* get_falling_piece() {
 
 int get_points() {
     return m_points;
+}
+
+Piece get_next_piece() {
+    return m_next_piece;
 }
 
 /** GAME LOGIC **/
@@ -87,9 +92,8 @@ void tetris_loop() {
 
         // Move to the next block
         reset_tetris_counter();
-        m_offset = 6;
-        random_seed = time(NULL); // Time since jan 1 1970
-        generate_new_piece();
+        m_offset = 6; // Initial position of the falling block
+        generate_new_piece(time(NULL));
         return;
     }
 
@@ -150,6 +154,15 @@ void make_piece_fall(int height_offset) {
     }
 }
 
+void game_over() {
+    for (int j=2; j < BOARD_WIDTH - 2; j++) {
+        if (m_last_tetris_grid.grid[2][j] != 0) {
+            printf("GAME OVER!!\n");
+            printf("YOUR SCORE IS: %lu\n", m_points);
+        }
+    }
+}
+
 void clear_lines() {
     u_short line_count = 0;
     bool full_line = true;
@@ -170,24 +183,31 @@ void clear_lines() {
             clear_line(i);
         }
     }
-    printf("Line count: %i\n", line_count);
 
     // Calculate Points
     if (line_count == 1) {
-        m_points += 1000;
+        m_points += 40 * (m_current_level + 1);
+        m_lines_cleared += 1;
         printf("ONE LINE CLEARED\n");
     }
     else if (line_count == 2) {
-        m_points += 2000;
+        m_points += 100 * (m_current_level + 1);
+        m_lines_cleared += 2;
         printf("TWO LINE CLEARED\n");
     }
     else if (line_count == 3) {
-        m_points += 3000;
+        m_points += 300 * (m_current_level + 1);
+        m_lines_cleared += 3;
         printf("THREE LINE CLEARED\n");
     }
     else if (line_count == 4) {
-        m_points += 5000;
+        m_points += 1200 * (m_current_level + 1);
+        m_lines_cleared += 4;
         printf("TETRIS\n");
+    }
+
+    if (line_count > 0) {
+        update_level();
     }
 }
 
@@ -204,40 +224,55 @@ void clear_line(int line) {
     }
 }
 
-void game_over() {
-    for (int j=2; j < BOARD_WIDTH - 2; j++) {
-        if (m_last_tetris_grid.grid[2][j] != 0) {
-            printf("GAME OVER!!\n");
-            printf("YOUR SCORE IS: %lu\n", m_points);
-        }
-    }
-}
+void generate_new_piece(u_int random_seed) {
 
-void init_new_piece() {
-    int tetromino_line[4] = {1, 1, 1, 1};
-
-    for (int i = 0; i < 4; i++) {
-
-        for (int j = 0; j < 4; j++) {
-            tetromino_line[j] = m_piece.tetromino[i][j];
-        }
-
-        for (int j = 3; j < 7; j++) {
-            if (tetromino_line[j - 3] != 0) {
-                m_falling_piece_grid.grid[i + 2][j + 3] = m_piece.color;
-            }
-        }
-    }
-
-    print_grid(m_tetris_grid.grid);
-}
-
-void generate_new_piece() {
     srand(random_seed);
     int random_piece = random_to_piece(ceil(((double)rand() / (double)RAND_MAX) * 7));
-    printf("piece: %i\n", random_piece);
-    m_piece = create_piece(random_piece);
-    m_piece = create_piece(LINE_BLOCK);
+
+    if (!g_game_start) {
+        m_next_piece = create_piece(random_piece);
+    }
+
+    m_piece = m_next_piece;
+    m_next_piece = create_piece(random_piece);
+}
+
+/** LEVELING AND SPEED **/
+
+void update_level() {
+    if (m_current_level >= 0) {
+        if (m_lines_cleared >= (m_current_level * 10 + 10)) {
+            m_current_level++;
+            m_lines_cleared = m_lines_cleared - ((m_current_level - 1) * 10 + 10);
+
+            update_speed();
+        }
+    }
+
+    printf("LINES: %i\n", m_lines_cleared);
+    printf("LEVEL: %i\n", m_current_level);
+}
+
+void update_speed() {
+    if (m_current_level >= 0 && m_current_level <= 10) {
+        update_tick_interval(20);
+    }
+
+    else if (m_current_level == 13) {
+        update_tick_interval(20);
+    }
+
+    else if (m_current_level == 16) {
+        update_tick_interval(20);
+    }
+
+    else if (m_current_level == 19) {
+        update_tick_interval(20);
+    }
+
+    else if (m_current_level == 29) {
+        update_tick_interval(20);
+    }
 }
 
 /** MOVEMENT **/
@@ -330,6 +365,21 @@ void update_event(bool *is_running) {
                         if (can_rotate()) {
                             rotate_up_piece(&m_piece);
                         }
+                        break;
+                    case SDLK_s:
+                        if (!m_pressed_down) {
+                            accelerate_piece();
+                            m_pressed_down = true;
+                        }
+                        break;
+                }
+            break;
+
+            case SDL_KEYUP:
+                switch (current_event.key.keysym.sym) {
+                    case SDLK_s:
+                        reset_piece_acceleration();
+                        m_pressed_down = false;
                         break;
                 }
             break;

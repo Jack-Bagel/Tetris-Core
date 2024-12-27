@@ -1,8 +1,12 @@
 #include <SDL2/SDL_image.h>
+#include <SDL_timer.h>
 #include <stdbool.h>
+#include <stdio.h>
+#include <sys/types.h>
 #include "TetrisHandler.h"
 #include "TetrisRenderer.h"
 #include "TetrisLogic.h"
+#include "TetrisTime.h"
 #include "GameWorld.h"
 
 #define SCREEN_WIDTH 1200
@@ -24,8 +28,9 @@ bool initialize_game_world() {
     // Initialization
     is_running = true;
     p_window = SDL_CreateWindow("Tetris 95", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
-    p_renderer = SDL_CreateRenderer(p_window, -1, SDL_RENDERER_ACCELERATED);
+    p_renderer = SDL_CreateRenderer(p_window, -1, SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED);
     register_textures(p_renderer);
+    init_tetris_time();
 
 
     if (!initialize_tetris_scene()) {
@@ -48,9 +53,8 @@ bool initialize_game_world() {
 bool run_game_world() {
 
     while (is_running) {
-        // event(&is_running);
+        update_event(&is_running);
         place_blocks_on_screen(p_window, p_renderer, &is_running);
-    	// SDL_Delay(100);
     }
 
     return 0;
