@@ -1,8 +1,13 @@
 #include "TetrisLogic.h"
+#include "TetrisHandler.h"
+#include "TetrisPauseScene.h"
+#include "TetrisStartScreen.h"
 #include "TetrisUtils.h"
 #include "Pieces.h"
 #include "TetrisTime.h"
+#include <SDL.h>
 #include <SDL_events.h>
+#include <SDL_keycode.h>
 #include <SDL_timer.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -62,6 +67,10 @@ Piece* get_falling_piece() {
 
 int get_points() {
     return m_points;
+}
+
+int get_level() {
+    return m_current_level;
 }
 
 Piece get_next_piece() {
@@ -224,6 +233,7 @@ void clear_line(int line) {
     }
 }
 
+// TODO: Implement NES piece generation 
 void generate_new_piece(u_int random_seed) {
 
     srand(random_seed);
@@ -238,12 +248,13 @@ void generate_new_piece(u_int random_seed) {
 }
 
 /** LEVELING AND SPEED **/
-
 void update_level() {
     if (m_current_level >= 0) {
-        if (m_lines_cleared >= (m_current_level * 10 + 10)) {
+        // if (m_lines_cleared >= (m_current_level * 10 + 10)) {
+        if (m_lines_cleared >= 10) {
             m_current_level++;
-            m_lines_cleared = m_lines_cleared - ((m_current_level - 1) * 10 + 10);
+            // m_lines_cleared = m_lines_cleared - ((m_current_level - 1) * 10 + 10);
+            m_lines_cleared = m_lines_cleared - 10;
 
             update_speed();
         }
@@ -342,36 +353,93 @@ bool can_rotate() {
     return true;
 }
 
-void update_event(bool *is_running) {
+// TODO: Move this in its own file
+void update_event(bool *p_is_running) {
     SDL_Event current_event;
     while (SDL_PollEvent(&current_event) != 0) {
         switch (current_event.type) {
             case SDL_QUIT:
-                *is_running = false;
+                *p_is_running = false;
                 break;
             case SDL_KEYDOWN:
                 switch (current_event.key.keysym.sym) {
+                    case SDLK_ESCAPE:
+                        if (get_current_scene() == 1) {
+                            pause_tetris_counter();
+                            set_current_scene(2);
+                        }
+                        else if (get_current_scene() == 2) {
+                            set_current_scene(1);
+                            unpause_tetris_counter();
+                        }
+                    break;
                     case SDLK_a: 
-                        if (can_move_left()) {
+                        if (can_move_left() && get_current_scene() == 1) {
                             m_offset -= 1;
+                        }
+                        // In Start Scene
+                        else if (get_current_scene() == 0) {
+                            decrease_button_selection();
+                        }
+                        // In Pause Scene
+                        else if (get_current_scene() == 2) {
+                            decrease_pause_button_selection();
                         }
                         break;
                     case SDLK_d:
-                        if (can_move_right()) {
+                        if (can_move_right() && get_current_scene() == 1) {
                             m_offset += 1;
+                        }
+                        // In Start Scene
+                        else if (get_current_scene() == 0) {
+                            increase_button_selection();
+                        }
+                        // In Pause Scene
+                        else if (get_current_scene() == 2) {
+                            increase_pause_button_selection();
                         }
                         break;
                     case SDLK_w:
-                        if (can_rotate()) {
+                        if (can_rotate() && get_current_scene() == 1) {
                             rotate_up_piece(&m_piece);
                         }
                         break;
                     case SDLK_s:
-                        if (!m_pressed_down) {
+                        if (!m_pressed_down && get_current_scene() == 1) {
                             accelerate_piece();
                             m_pressed_down = true;
                         }
                         break;
+                    case SDLK_RETURN:
+                        if (get_current_scene() == 0) {
+                            switch (get_button_selection()) {
+                                case 0:
+                                    set_current_scene(1);
+                                break;
+                                case 2:
+                                    printf("CLOSE GAME\n");
+                                    *p_is_running = false;
+                                break;
+                            }
+                        }
+                        else if (get_current_scene() == 2) {
+                            switch (get_pause_button_selection()) {
+                                case 0:
+                                    set_current_scene(1);
+                                    unpause_tetris_counter();
+                                break;
+                                case 1:
+                                    set_current_scene(1);
+                                    unpause_tetris_counter();
+                                    g_game_start = false;
+                                break;
+                                case 2:
+                                    set_current_scene(0);
+                                    unpause_tetris_counter();
+                                    g_game_start = false;
+                                break;
+                            }
+                        }
                 }
             break;
 

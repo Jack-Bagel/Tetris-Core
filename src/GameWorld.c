@@ -1,16 +1,18 @@
 #include <SDL2/SDL_image.h>
+#include <SDL_render.h>
 #include <SDL_timer.h>
+#include <SDL_ttf.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <sys/types.h>
 #include "TetrisHandler.h"
+#include "TetrisPauseScene.h"
 #include "TetrisRenderer.h"
 #include "TetrisLogic.h"
+#include "TetrisStartScreen.h"
 #include "TetrisTime.h"
 #include "GameWorld.h"
 
-#define SCREEN_WIDTH 1200
-#define SCREEN_HEIGHT 1000
 
 bool initialize_game_world() {
 
@@ -21,8 +23,12 @@ bool initialize_game_world() {
     }
 
     if(IMG_Init(IMG_INIT_PNG | IMG_INIT_JPG) < 0) {
-        printf("Failed to initialize the SDL2_IMAGE library\n");
+        printf("Failed to initialize the SDL2_image library\n");
         return -1;
+    }
+
+    if (TTF_Init() < 0) {
+        printf("Failed to initialize the SDL2_ttf library\n");
     }
 
     // Initialization
@@ -31,6 +37,9 @@ bool initialize_game_world() {
     p_renderer = SDL_CreateRenderer(p_window, -1, SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED);
     register_textures(p_renderer);
     init_tetris_time();
+    init_scene();
+    init_start_screen();
+    init_pause_screen();
 
 
     if (!initialize_tetris_scene()) {
@@ -54,7 +63,7 @@ bool run_game_world() {
 
     while (is_running) {
         update_event(&is_running);
-        place_blocks_on_screen(p_window, p_renderer, &is_running);
+        update_game(p_window, p_renderer, m_viewport);
     }
 
     return 0;
@@ -68,6 +77,7 @@ bool exit_game_world() {
     p_window = NULL;
     p_renderer = NULL;
     IMG_Quit();
+    TTF_Quit();
     SDL_Quit();
 
     return 0;

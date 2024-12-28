@@ -29,6 +29,7 @@ extern TetrisGrid* get_last_tetris_grid();
 extern TetrisGrid* get_falling_piece_grid();
 extern Piece* get_falling_piece();
 extern int get_points();
+extern int get_level();
 extern Piece get_next_piece();
 
 extern bool initialize_tetris_scene();

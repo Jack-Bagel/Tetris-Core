@@ -20,10 +20,15 @@ set(PROJECT_SOURCE_FILES
     src/Pieces.c
     src/TetrisTime.c
     src/TetrisUtils.c
+    src/TetrisInputEvent.c
+    src/Button.c
+    src/TextureRegistry.c
 
     src/scene/TetrisHandler.c
     src/scene/TetrisLogic.c
     src/scene/TetrisRenderer.c
+    src/scene/TetrisStartScreen.c
+    src/scene/TetrisPauseScreen.c
 )
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON) # Fixes includes path
@@ -34,9 +39,9 @@ target_link_libraries(${PROJECT_NAME}
     ${OPENGL_LIBRARY}
     ${SDL2_LIBRARIES}
     SDL2_image::SDL2_image
+    SDL2_ttf::SDL2_ttf
     ${PNGLIB}
     ${SDL2_MIXER_LIBRARIES}
-    ${SDL2_TTF_LIBRARIES}
     m # math
 )
 

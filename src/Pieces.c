@@ -7,7 +7,7 @@ Piece create_piece(Tetromino tetromino) {
     
     Piece I_block = {
         .type = LINE_BLOCK,
-        .color = RED,
+        .color = CYAN,
         .tetromino = {
         {0, 0, 0, 0},
         {1, 1, 1, 1},
@@ -17,7 +17,7 @@ Piece create_piece(Tetromino tetromino) {
 
     Piece S_block = {
         .type = SQUARE_BLOCK,
-        .color = GREEN,
+        .color = YELLOW,
         .tetromino = {
         {0, 0, 0, 0},
         {1, 1, 0, 0},
@@ -27,7 +27,7 @@ Piece create_piece(Tetromino tetromino) {
 
     Piece T_block = {
         .type = T_BLOCK,
-        .color = BLUE,
+        .color = PURPLE,
         .tetromino = {
         {0, 0, 0, 0},
         {1, 1, 1, 0},
@@ -37,7 +37,7 @@ Piece create_piece(Tetromino tetromino) {
 
     Piece L_block = {
         .type = L_BLOCK,
-        .color = YELLOW,
+        .color = ORANGE,
         .tetromino = {
         {0, 0, 0, 0},
         {1, 1, 1, 0},
@@ -47,7 +47,7 @@ Piece create_piece(Tetromino tetromino) {
 
     Piece R_L_block = {
         .type = R_L_BLOCK,
-        .color = PURPLE,
+        .color = BLUE,
         .tetromino = {
         {0, 0, 0, 0},
         {1, 1, 1, 0},
@@ -57,7 +57,7 @@ Piece create_piece(Tetromino tetromino) {
 
     Piece Z_block = {
         .type = Z_BLOCK,
-        .color = CYAN,
+        .color = RED,
         .tetromino = {
         {0, 0, 0, 0},
         {1, 1, 0, 0},
@@ -67,7 +67,7 @@ Piece create_piece(Tetromino tetromino) {
 
     Piece R_Z_block = {
         .type = R_Z_BLOCK,
-        .color = ORANGE,
+        .color = GREEN,
         .tetromino = {
         {0, 0, 0, 0},
         {0, 1, 1, 0},
