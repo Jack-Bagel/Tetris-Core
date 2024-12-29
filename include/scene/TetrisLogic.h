@@ -12,6 +12,10 @@ typedef struct TetrisGrid {
     int grid[BOARD_HEIGHT][BOARD_WIDTH];
 } TetrisGrid;
 
+typedef struct TetrisBoard {
+
+} TetrisBoard;
+
 static TetrisGrid m_tetris_grid;
 static TetrisGrid m_last_tetris_grid;
 static TetrisGrid m_falling_piece_grid;

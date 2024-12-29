@@ -1,9 +1,9 @@
 #include "TetrisRenderer.h"
 #include "TetrisLogic.h"
 #include "TextureRegistry.h"
-#include <SDL_ttf.h>
-#include <SDL_image.h>
-#include <SDL_render.h>
+#include <SDL2/SDL_ttf.h>
+#include <SDL2/SDL_image.h>
+#include <SDL2/SDL_render.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

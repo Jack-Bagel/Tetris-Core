@@ -5,7 +5,7 @@
 #include "TetrisRenderer.h"
 #include "TetrisStartScreen.h"
 #include "TetrisTime.h"
-#include <SDL_rect.h>
+#include <SDL2/SDL_rect.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <time.h>

@@ -1,6 +1,6 @@
 #pragma once
-#include <SDL_render.h>
-#include <SDL_video.h>
+#include <SDL2/SDL_render.h>
+#include <SDL2/SDL_video.h>
 #include <stdbool.h>
 #include <sys/types.h>
 

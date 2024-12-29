@@ -1,6 +1,6 @@
 #pragma once
 #include <stdbool.h>
-#include <SDL.h>
+#include <SDL2/SDL.h>
 
 #define SCREEN_WIDTH 1440
 #define SCREEN_HEIGHT 810

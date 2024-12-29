@@ -1,8 +1,8 @@
 #pragma once
 #include "Button.h"
-#include <SDL_pixels.h>
-#include <SDL_render.h>
-#include <SDL_ttf.h>
+#include <SDL2/SDL_pixels.h>
+#include <SDL2/SDL_render.h>
+#include <SDL2/SDL_ttf.h>
 
 static Button m_continue;
 static Button m_restart;

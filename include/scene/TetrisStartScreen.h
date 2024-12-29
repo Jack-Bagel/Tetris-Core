@@ -1,7 +1,7 @@
 #pragma once
 #include "Button.h"
-#include <SDL_pixels.h>
-#include <SDL_render.h>
+#include <SDL2/SDL_pixels.h>
+#include <SDL2/SDL_render.h>
 
 static Button one_player;
 static Button two_players;

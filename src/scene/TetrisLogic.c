@@ -2,10 +2,10 @@
 #include "TetrisUtils.h"
 #include "Pieces.h"
 #include "TetrisTime.h"
-#include <SDL.h>
-#include <SDL_events.h>
-#include <SDL_keycode.h>
-#include <SDL_timer.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_events.h>
+#include <SDL2/SDL_keycode.h>
+#include <SDL2/SDL_timer.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>

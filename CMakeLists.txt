@@ -5,10 +5,8 @@ project (TetrisCore)
 find_package(OpenGL REQUIRED)
 find_package(SDL2 REQUIRED)
 find_package(SDL2_image REQUIRED)
-find_package(SDL2_mixer REQUIRED)
+# find_package(SDL2_mixer REQUIRED)
 find_package(SDL2_ttf REQUIRED)
-
-find_library(PNGLIB png)
 
 # Set static linking
 # set(CMAKE_EXE_LINKER_FLAGS "-static")
@@ -37,14 +35,12 @@ add_executable(${PROJECT_NAME} ${PROJECT_SOURCE_FILES})
 # Libraries
 target_link_libraries(${PROJECT_NAME}
     ${OPENGL_LIBRARY}
-    ${SDL2_LIBRARIES}
-    ${SDL2_IMAGE_LIBRARIES}
-    ${SDL2_TTF_LIBRARIES}
-    SDL2_image::SDL2_image
-    SDL2_ttf::SDL2_ttf
-    ${PNGLIB}
-    ${SDL2_MIXER_LIBRARIES}
+    /usr/local/lib/libSDL2.a
+    /usr/local/lib/libSDL2_image.a
+    /usr/local/lib/libSDL2_ttf.a
+    # ${SDL2_MIXER_LIBRARIES}
     m # math
+    freetype
 )
 
 # Includes

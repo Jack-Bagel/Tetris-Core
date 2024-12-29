@@ -1,7 +1,7 @@
 #include "TetrisTime.h"
 #include "TetrisHandler.h"
-#include <SDL_stdinc.h>
-#include <SDL_timer.h>
+#include <SDL2/SDL_stdinc.h>
+#include <SDL2/SDL_timer.h>
 #include <stdio.h>
 #include <sys/types.h>
 

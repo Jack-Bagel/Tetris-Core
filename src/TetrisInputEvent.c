@@ -3,10 +3,10 @@
 #include "TetrisPauseScene.h"
 #include "TetrisStartScreen.h"
 #include "TetrisTime.h"
-#include <SDL_events.h>
-#include <SDL.h>
-#include <SDL_keyboard.h>
-#include <SDL_keycode.h>
+#include <SDL2/SDL_events.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_keyboard.h>
+#include <SDL2/SDL_keycode.h>
 
 extern bool g_game_start;
 Uint8 *keystate;
