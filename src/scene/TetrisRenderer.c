@@ -11,6 +11,7 @@
 
 extern SDL_Texture *g_p_block;
 extern SDL_Texture *g_p_gameplay_background;
+extern TTF_Font *g_p_font;
 
 void render_tetris_grid(int tetris_grid[BOARD_HEIGHT][BOARD_WIDTH], int piece_size, SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_Rect viewport) {
     int *color_value; // Array of 3 elements
@@ -62,19 +63,13 @@ void render_gameplay_background(SDL_Window *p_window, SDL_Renderer *p_renderer, 
 
 void render_score(SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_Rect viewport) {
 
-    TTF_Font *points_font = TTF_OpenFont("../resources/fonts/Minecraft.ttf", 20);
-
-    if (points_font == NULL) {
-        printf("Error: Could not load font\n");
-    }
-
     SDL_Color text_color = {255, 255 ,255};
     char temp_str[64];
     sprintf(temp_str, "%d", get_points()); // move integer inside string
     char level_str[] = "Points: ";
     strcat(level_str, temp_str);
 
-    SDL_Surface* surface_message = TTF_RenderText_Solid(points_font, level_str, text_color); 
+    SDL_Surface* surface_message = TTF_RenderText_Solid(g_p_font, level_str, text_color); 
     SDL_Texture* texture_message = SDL_CreateTextureFromSurface(p_renderer, surface_message);
     int tex_w = surface_message->w;
     int tex_h = surface_message->h;
@@ -84,16 +79,9 @@ void render_score(SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_Rect
 
     SDL_FreeSurface(surface_message);
     SDL_DestroyTexture(texture_message);
-    TTF_CloseFont(points_font);
 }
 
 void render_level(SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_Rect viewport) {
-
-    TTF_Font *level_font = TTF_OpenFont("../resources/fonts/Minecraft.ttf", 20);
-
-    if (level_font == NULL) {
-        printf("Error: Could not load font\n");
-    }
 
     SDL_Color text_color = {255, 255 ,255};
     char temp_str[8];
@@ -101,7 +89,7 @@ void render_level(SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_Rect
     char level_str[] = "Level: ";
     strcat(level_str, temp_str);
 
-    SDL_Surface* surface_message = TTF_RenderText_Solid(level_font, level_str, text_color); 
+    SDL_Surface* surface_message = TTF_RenderText_Solid(g_p_font, level_str, text_color); 
     SDL_Texture* texture_message = SDL_CreateTextureFromSurface(p_renderer, surface_message);
     int tex_w = surface_message->w;
     int tex_h = surface_message->h;
@@ -111,7 +99,6 @@ void render_level(SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_Rect
 
     SDL_FreeSurface(surface_message);
     SDL_DestroyTexture(texture_message);
-    TTF_CloseFont(level_font);
 }
 
 void render_next_piece(Piece next_piece, int piece_size, SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_Rect viewport) {

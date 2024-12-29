@@ -1,6 +1,5 @@
 #include "TetrisStartScreen.h"
 #include "Button.h"
-#include "GameWorld.h"
 #include <SDL_pixels.h>
 #include <SDL_rect.h>
 #include <SDL_render.h>
@@ -10,24 +9,21 @@
 #include <string.h>
 
 extern SDL_Texture *g_p_background;
+extern TTF_Font *g_p_font;
 
 void init_start_screen() {
     Button temp_one_player = {.x = 450, .y = 400, .text = "One Player"};
     one_player = temp_one_player;
 
-    Button temp_two_players = {.x = 650, .y = 400, .text = "Two Players"};
+    Button temp_two_players = {.x = 640, .y = 400, .text = "Two Players"};
     two_players = temp_two_players;
 
     Button temp_quit = {.x = 850, .y = 400, .text = "Quit Tetris"};
     quit_game = temp_quit;
 
-    font = TTF_OpenFont("../resources/fonts/Minecraft.ttf", 25);
     text_color.r = 255; text_color.g = 255; text_color.b = 255;
     button_selection = 0;
 
-    if (font == NULL) {
-        printf("Error: Could not load font\n");
-    }
 }
 
 void increase_button_selection() {
@@ -65,7 +61,8 @@ void render_buttons(SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_Re
     Button buttons[3] = {one_player, two_players, quit_game};
 
     for (int i=0; i < sizeof(buttons) / sizeof(buttons[0]); i++) {
-        SDL_Surface* surface_message = TTF_RenderText_Solid(font, buttons[i].text, text_color); 
+        SDL_Surface* surface_message = 
+        TTF_RenderText_Solid(g_p_font, buttons[i].text, text_color); 
         SDL_Texture* texture_message = SDL_CreateTextureFromSurface(p_renderer, surface_message);
         int tex_w = surface_message->w;
         int tex_h = surface_message->h;

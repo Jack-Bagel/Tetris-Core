@@ -1,6 +1,7 @@
 #include "TetrisPauseScene.h"
 
 extern SDL_Texture *g_p_background;
+extern TTF_Font *g_p_font;
 
 void init_pause_screen() {
     Button temp_continue = {.x = 450, .y = 400, .text = "Continue"};
@@ -12,13 +13,8 @@ void init_pause_screen() {
     Button temp_return = {.x = 850, .y = 400, .text = "Return to Menu"};
     m_return_to_start = temp_return;
 
-    font = TTF_OpenFont("../resources/fonts/Minecraft.ttf", 25);
     text_color.r = 255; text_color.g = 255; text_color.b = 255;
     button_selection = 0;
-
-    if (font == NULL) {
-        printf("Error: Could not load font\n");
-    }
 }
 
 void increase_pause_button_selection() {
@@ -57,7 +53,7 @@ void render_pause_buttons(SDL_Window *p_window, SDL_Renderer *p_renderer, const 
     Button buttons[3] = {m_continue, m_restart, m_return_to_start};
 
     for (int i=0; i < sizeof(buttons) / sizeof(buttons[0]); i++) {
-        SDL_Surface* surface_message = TTF_RenderText_Solid(font, buttons[i].text, text_color); 
+        SDL_Surface* surface_message = TTF_RenderText_Solid(g_p_font, buttons[i].text, text_color); 
         SDL_Texture* texture_message = SDL_CreateTextureFromSurface(p_renderer, surface_message);
         int tex_w = surface_message->w;
         int tex_h = surface_message->h;

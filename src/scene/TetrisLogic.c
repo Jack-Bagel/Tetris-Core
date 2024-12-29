@@ -1,7 +1,4 @@
 #include "TetrisLogic.h"
-#include "TetrisHandler.h"
-#include "TetrisPauseScene.h"
-#include "TetrisStartScreen.h"
 #include "TetrisUtils.h"
 #include "Pieces.h"
 #include "TetrisTime.h"
@@ -193,7 +190,7 @@ void clear_lines() {
         }
     }
 
-    // Calculate Points
+    // Calculate Points TODO: Should also win points when piece is placed
     if (line_count == 1) {
         m_points += 40 * (m_current_level + 1);
         m_lines_cleared += 1;
@@ -287,6 +284,24 @@ void update_speed() {
 }
 
 /** MOVEMENT **/
+
+void rotate_piece_clockwise() {
+    if (can_rotate()) {
+        rotate_up_piece(&m_piece);
+    }
+}
+
+void move_left() {
+    if (can_move_left()) {
+        m_offset--;
+    }
+}
+void move_right() {
+    if (can_move_right()) {
+        m_offset++;
+    }
+}
+
 bool can_move_left() {
     TetrisGrid temp_grid = {.grid = {0}};
     for (int i = 0; i < BOARD_HEIGHT; i++) {
@@ -353,105 +368,4 @@ bool can_rotate() {
     return true;
 }
 
-// TODO: Move this in its own file
-void update_event(bool *p_is_running) {
-    SDL_Event current_event;
-    while (SDL_PollEvent(&current_event) != 0) {
-        switch (current_event.type) {
-            case SDL_QUIT:
-                *p_is_running = false;
-                break;
-            case SDL_KEYDOWN:
-                switch (current_event.key.keysym.sym) {
-                    case SDLK_ESCAPE:
-                        if (get_current_scene() == 1) {
-                            pause_tetris_counter();
-                            set_current_scene(2);
-                        }
-                        else if (get_current_scene() == 2) {
-                            set_current_scene(1);
-                            unpause_tetris_counter();
-                        }
-                    break;
-                    case SDLK_a: 
-                        if (can_move_left() && get_current_scene() == 1) {
-                            m_offset -= 1;
-                        }
-                        // In Start Scene
-                        else if (get_current_scene() == 0) {
-                            decrease_button_selection();
-                        }
-                        // In Pause Scene
-                        else if (get_current_scene() == 2) {
-                            decrease_pause_button_selection();
-                        }
-                        break;
-                    case SDLK_d:
-                        if (can_move_right() && get_current_scene() == 1) {
-                            m_offset += 1;
-                        }
-                        // In Start Scene
-                        else if (get_current_scene() == 0) {
-                            increase_button_selection();
-                        }
-                        // In Pause Scene
-                        else if (get_current_scene() == 2) {
-                            increase_pause_button_selection();
-                        }
-                        break;
-                    case SDLK_w:
-                        if (can_rotate() && get_current_scene() == 1) {
-                            rotate_up_piece(&m_piece);
-                        }
-                        break;
-                    case SDLK_s:
-                        if (!m_pressed_down && get_current_scene() == 1) {
-                            accelerate_piece();
-                            m_pressed_down = true;
-                        }
-                        break;
-                    case SDLK_RETURN:
-                        if (get_current_scene() == 0) {
-                            switch (get_button_selection()) {
-                                case 0:
-                                    set_current_scene(1);
-                                break;
-                                case 2:
-                                    printf("CLOSE GAME\n");
-                                    *p_is_running = false;
-                                break;
-                            }
-                        }
-                        else if (get_current_scene() == 2) {
-                            switch (get_pause_button_selection()) {
-                                case 0:
-                                    set_current_scene(1);
-                                    unpause_tetris_counter();
-                                break;
-                                case 1:
-                                    set_current_scene(1);
-                                    unpause_tetris_counter();
-                                    g_game_start = false;
-                                break;
-                                case 2:
-                                    set_current_scene(0);
-                                    unpause_tetris_counter();
-                                    g_game_start = false;
-                                break;
-                            }
-                        }
-                }
-            break;
-
-            case SDL_KEYUP:
-                switch (current_event.key.keysym.sym) {
-                    case SDLK_s:
-                        reset_piece_acceleration();
-                        m_pressed_down = false;
-                        break;
-                }
-            break;
-        }
-    }
-}
 

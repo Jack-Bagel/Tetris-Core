@@ -22,8 +22,6 @@ static u_int m_lines_cleared;
 static u_int m_current_level;
 static Piece m_next_piece;
 
-static bool m_pressed_down;
-
 extern TetrisGrid* get_tetris_grid();
 extern TetrisGrid* get_last_tetris_grid();
 extern TetrisGrid* get_falling_piece_grid();
@@ -36,6 +34,9 @@ extern bool initialize_tetris_scene();
 extern void tetris_loop();
 extern void update_event(bool *is_running);
 extern void generate_new_piece(u_int u_int);
+extern void rotate_piece_clockwise();
+extern void move_left();
+extern void move_right();
 
 static void make_piece_fall(int height_offset);
 static bool piece_collides(TetrisGrid *p_last_tetris_grid, TetrisGrid *p_falling_piece_grid);

@@ -8,7 +8,6 @@ static Button m_continue;
 static Button m_restart;
 static Button m_return_to_start;
 static int button_selection;
-static TTF_Font *font;
 static SDL_Color text_color;
 
 extern void render_pause_background(SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_Rect viewport);

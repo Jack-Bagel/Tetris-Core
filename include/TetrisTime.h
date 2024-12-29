@@ -9,6 +9,7 @@ static int m_last_update_time;
 static int m_normal_tick_interval;
 static int m_accelerated_tick_interval;
 static bool m_is_paused;
+static bool m_pressed_down;
 
 extern void accelerate_piece();
 extern void reset_piece_acceleration();
