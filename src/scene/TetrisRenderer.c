@@ -1,6 +1,5 @@
 #include "TetrisRenderer.h"
 #include "TetrisLogic.h"
-#include "TextureRegistry.h"
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_render.h>
@@ -61,11 +60,11 @@ void render_gameplay_background(SDL_Window *p_window, SDL_Renderer *p_renderer, 
     SDL_RenderCopy(p_renderer, g_p_gameplay_background, NULL, &background);
 }
 
-void render_score(SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_Rect viewport) {
+void render_score(TetrisBoard *p_tetris_board, SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_Rect viewport) {
 
     SDL_Color text_color = {255, 255 ,255};
     char temp_str[64];
-    sprintf(temp_str, "%d", get_points()); // move integer inside string
+    sprintf(temp_str, "%d", get_points(p_tetris_board)); // move integer inside string
     char level_str[] = "Points: ";
     strcat(level_str, temp_str);
 
@@ -81,11 +80,11 @@ void render_score(SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_Rect
     SDL_DestroyTexture(texture_message);
 }
 
-void render_level(SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_Rect viewport) {
+void render_level(TetrisBoard *p_tetris_board, SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_Rect viewport) {
 
     SDL_Color text_color = {255, 255 ,255};
     char temp_str[8];
-    sprintf(temp_str, "%d", get_level()); // move integer inside string
+    sprintf(temp_str, "%d", get_level(p_tetris_board)); // move integer inside string
     char level_str[] = "Level: ";
     strcat(level_str, temp_str);
 

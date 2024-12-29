@@ -9,9 +9,8 @@
 #include <SDL2/SDL_keycode.h>
 
 extern bool g_game_start;
-Uint8 *keystate;
 
-void update_event(bool *p_is_running) {
+void update_event(TetrisBoard *p_tetris_board, bool *p_is_running) {
     SDL_Event current_event;
     while (SDL_PollEvent(&current_event) != 0) {
         switch (current_event.type) {
@@ -38,7 +37,7 @@ void update_event(bool *p_is_running) {
                     case SDLK_a: 
                         // In Game Scene
                         if (get_current_scene() == 1) {
-                            move_left();
+                            move_left(p_tetris_board);
                         }
                         // In Start Scene
                         if (get_current_scene() == 0) {
@@ -54,7 +53,7 @@ void update_event(bool *p_is_running) {
                     case SDLK_d:
                         // In Game Scene
                         if (get_current_scene() == 1) {
-                            move_right();
+                            move_right(p_tetris_board);
                         }
                         // In Start Scene
                         if (get_current_scene() == 0) {
@@ -71,7 +70,7 @@ void update_event(bool *p_is_running) {
                     case SDLK_w:
                         // In Game Scene
                         if (get_current_scene() == 1) {
-                            rotate_piece_clockwise();
+                            rotate_piece_clockwise(p_tetris_board);
                         }
                         break;
 
