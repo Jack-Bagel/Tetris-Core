@@ -12,9 +12,8 @@ extern SDL_Texture *g_p_block;
 extern SDL_Texture *g_p_gameplay_background;
 extern TTF_Font *g_p_font;
 
-void render_tetris_grid(int tetris_grid[BOARD_HEIGHT][BOARD_WIDTH], int piece_size, SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_Rect viewport) {
+void render_tetris_grid(int tetris_grid[BOARD_HEIGHT][BOARD_WIDTH], int piece_size, SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_Rect viewport, int offset_x, int offset_y) {
     int *color_value; // Array of 3 elements
-
 
     for (int i = 0; i < BOARD_HEIGHT; i++) { //TODO: Read board dimensions from a file
         for (int j = 0; j < BOARD_WIDTH; j++) {
@@ -22,15 +21,13 @@ void render_tetris_grid(int tetris_grid[BOARD_HEIGHT][BOARD_WIDTH], int piece_si
             color_value = get_block_color(tetris_grid[i][j]);
 
             // No idea why but if I don't run it twice I get rendering issues, need to figure out wtf's going on
-            render_block(p_window, p_renderer, viewport, index_to_position(i, j, piece_size, p_window), color_value, piece_size);
-            render_block(p_window, p_renderer, viewport, index_to_position(i, j, piece_size, p_window), color_value, piece_size);
+            render_block(p_window, p_renderer, viewport, index_to_position(i, j, piece_size, p_window, offset_x, offset_y), color_value, piece_size);
+            render_block(p_window, p_renderer, viewport, index_to_position(i, j, piece_size, p_window, offset_x, offset_y), color_value, piece_size);
             
             free(color_value); //TODO: avoid using dynamic allocation for the colors
         }
     }
 
-    SDL_RenderSetLogicalSize(p_renderer, viewport.w, viewport.h);
-    SDL_RenderPresent(p_renderer);
 }
 
 void render_block(SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_Rect viewport, int *position, int *color, int size) {
@@ -40,11 +37,11 @@ void render_block(SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_Rect
     free(position); // I may need to free both pointers, idk if it is done automatically
 }
 
-int* index_to_position(int index_i, int index_j, int size, SDL_Window *p_window) {
+int* index_to_position(int index_i, int index_j, int size, SDL_Window *p_window, int offset_x, int offset_y) {
     int *position = malloc(sizeof(int) * 2); // Free in render_tetris_grid()
 
-    position[1] = index_j*size + (500);
-    position[0] = index_i*size + (40);
+    position[1] = index_j*size + (500 + offset_x);
+    position[0] = index_i*size + (40 + offset_y);
 
     return position;
 }
@@ -60,7 +57,7 @@ void render_gameplay_background(SDL_Window *p_window, SDL_Renderer *p_renderer, 
     SDL_RenderCopy(p_renderer, g_p_gameplay_background, NULL, &background);
 }
 
-void render_score(TetrisBoard *p_tetris_board, SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_Rect viewport) {
+void render_score(TetrisBoard *p_tetris_board, SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_Rect viewport, int offset_x, int offset_y) {
 
     SDL_Color text_color = {255, 255 ,255};
     char temp_str[64];
@@ -73,14 +70,14 @@ void render_score(TetrisBoard *p_tetris_board, SDL_Window *p_window, SDL_Rendere
     int tex_w = surface_message->w;
     int tex_h = surface_message->h;
 
-    const SDL_Rect points_rect = {.x = 960, .y = 100, .w = tex_w, .h = tex_h};
+    const SDL_Rect points_rect = {.x = 960 + offset_x, .y = 100 + offset_y, .w = tex_w, .h = tex_h};
     SDL_RenderCopy(p_renderer, texture_message, NULL, &points_rect);
 
     SDL_FreeSurface(surface_message);
     SDL_DestroyTexture(texture_message);
 }
 
-void render_level(TetrisBoard *p_tetris_board, SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_Rect viewport) {
+void render_level(TetrisBoard *p_tetris_board, SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_Rect viewport, int offset_x, int offset_y) {
 
     SDL_Color text_color = {255, 255 ,255};
     char temp_str[8];
@@ -93,14 +90,14 @@ void render_level(TetrisBoard *p_tetris_board, SDL_Window *p_window, SDL_Rendere
     int tex_w = surface_message->w;
     int tex_h = surface_message->h;
 
-    const SDL_Rect level_rect = {.x = 960, .y = 570, .w = tex_w, .h = tex_h};
+    const SDL_Rect level_rect = {.x = 960 + offset_x, .y = 570 + offset_y, .w = tex_w, .h = tex_h};
     SDL_RenderCopy(p_renderer, texture_message, NULL, &level_rect);
 
     SDL_FreeSurface(surface_message);
     SDL_DestroyTexture(texture_message);
 }
 
-void render_next_piece(Piece next_piece, int piece_size, SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_Rect viewport) {
+void render_next_piece(Piece next_piece, int piece_size, SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_Rect viewport, int offset_x, int offset_y) {
     int *color_value; // Array of 3 elements
 
     for (int i = 0; i < 4; i++) { //TODO: Read board dimensions from a file
@@ -109,8 +106,8 @@ void render_next_piece(Piece next_piece, int piece_size, SDL_Window *p_window, S
                 color_value = get_block_color(next_piece.tetromino[i][j] * next_piece.color);
 
                 // No idea why but if I don't run it twice I get rendering issues, need to figure out wtf's going on
-                render_block(p_window, p_renderer, viewport, index_to_position_next_piece(i, j, piece_size, p_window), color_value, piece_size);
-                render_block(p_window, p_renderer, viewport, index_to_position_next_piece(i, j, piece_size, p_window), color_value, piece_size);
+                render_block(p_window, p_renderer, viewport, index_to_position_next_piece(i, j, piece_size, p_window, offset_x, offset_y), color_value, piece_size);
+                render_block(p_window, p_renderer, viewport, index_to_position_next_piece(i, j, piece_size, p_window, offset_x, offset_y), color_value, piece_size);
                 
                 free(color_value); //TODO: avoid using dynamic allocation for the colors
             }
@@ -119,11 +116,11 @@ void render_next_piece(Piece next_piece, int piece_size, SDL_Window *p_window, S
     }
 }
 
-int* index_to_position_next_piece(int index_i, int index_j, int size, SDL_Window *p_window) {
+int* index_to_position_next_piece(int index_i, int index_j, int size, SDL_Window *p_window, int offset_x, int offset_y) {
     int *position = malloc(sizeof(int) * 2); // Free in render_tetris_grid()
 
-    position[1] = index_j*size + (970);
-    position[0] = index_i*size + (300);
+    position[1] = index_j*size + (970) + offset_x;
+    position[0] = index_i*size + (300) + offset_y;
 
     return position;
 }
@@ -131,4 +128,9 @@ int* index_to_position_next_piece(int index_i, int index_j, int size, SDL_Window
 void clear_screen(SDL_Renderer *p_renderer) {
     SDL_SetRenderDrawColor(p_renderer, 0, 30, 30, 0);
     SDL_RenderClear(p_renderer);
+}
+
+void draw_screen(SDL_Renderer *p_renderer, const SDL_Rect viewport) {
+    SDL_RenderSetLogicalSize(p_renderer, viewport.w, viewport.h);
+    SDL_RenderPresent(p_renderer);
 }

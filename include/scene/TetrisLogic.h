@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <sys/types.h>
 #include "Pieces.h"
+#include "TetrisTime.h"
 
 #define BOARD_WIDTH 14
 #define BOARD_HEIGHT 23
@@ -16,42 +17,44 @@ typedef struct TetrisBoard {
     TetrisGrid m_tetris_grid;
     TetrisGrid m_last_tetris_grid;
     TetrisGrid m_falling_piece_grid;
+    bool m_game_start;
     Piece m_piece;
     int m_offset;
     u_long m_points;
     u_int m_lines_cleared;
     u_int m_current_level;
     Piece m_next_piece;
+    TetrisCounter m_counter;
 
 } TetrisBoard;
 
-extern TetrisGrid* get_tetris_grid(TetrisBoard *p_tetris_board);
-extern TetrisGrid* get_last_tetris_grid(TetrisBoard *p_tetris_board);
-extern TetrisGrid* get_falling_piece_grid(TetrisBoard *p_tetris_board);
-extern Piece* get_falling_piece(TetrisBoard *p_tetris_board);
-extern int get_points(TetrisBoard *p_tetris_board);
-extern int get_level(TetrisBoard *p_tetris_board);
-extern Piece get_next_piece(TetrisBoard *p_tetris_board);
+extern TetrisGrid* get_tetris_grid(TetrisBoard *self);
+extern TetrisGrid* get_last_tetris_grid(TetrisBoard *self);
+extern TetrisGrid* get_falling_piece_grid(TetrisBoard *self);
+extern Piece* get_falling_piece(TetrisBoard *self);
+extern int get_points(TetrisBoard *self);
+extern int get_level(TetrisBoard *self);
+extern Piece get_next_piece(TetrisBoard *self);
 
-extern bool init_tetris_board(TetrisBoard *p_tetris_board);
-extern void tetris_loop(TetrisBoard *p_tetris_board);
-extern void generate_new_piece(TetrisBoard *p_tetris_board, u_int u_int); // Make it static
+extern void tetris_loop(TetrisBoard *self);
 
 // Controls 
-extern void rotate_piece_clockwise(TetrisBoard *p_tetris_board);
-extern void move_left(TetrisBoard *p_tetris_board);
-extern void move_right(TetrisBoard *p_tetris_board);
+extern void rotate_piece_clockwise(TetrisBoard *self);
+extern void move_left(TetrisBoard *self);
+extern void move_right(TetrisBoard *self);
 
 // Tetris board loop
-static void make_piece_fall(TetrisBoard *p_tetris_board, int height_offset);
+static bool init_tetris_board(TetrisBoard *self);
+static void generate_new_piece(TetrisBoard *self, u_int u_int);
+static void make_piece_fall(TetrisBoard *self, int height_offset);
 static bool piece_collides(TetrisGrid *p_last_tetris_grid, TetrisGrid *p_falling_piece_grid);
-static void init_tetris_edges(TetrisBoard *p_tetris_board);
-static void clear_lines(TetrisBoard *p_tetris_board);
-static void clear_line(TetrisBoard *p_tetris_board, int line);
-static void game_over(TetrisBoard *p_tetris_board);
-static bool can_move_left(TetrisBoard *p_tetris_board);
-static bool can_move_right(TetrisBoard *p_tetris_board);
-static bool can_rotate(TetrisBoard *p_tetris_board);
+static void init_tetris_edges(TetrisBoard *self);
+static void clear_lines(TetrisBoard *self);
+static void clear_line(TetrisBoard *self, int line);
+static void game_over(TetrisBoard *self);
+static bool can_move_left(TetrisBoard *self);
+static bool can_move_right(TetrisBoard *self);
+static bool can_rotate(TetrisBoard *self);
 
-static void update_level(TetrisBoard *p_tetris_board);
-static void update_speed(TetrisBoard *p_tetris_board);
+static void update_level(TetrisBoard *self);
+static void update_speed(TetrisBoard *self);

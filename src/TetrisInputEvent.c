@@ -10,7 +10,7 @@
 
 extern bool g_game_start;
 
-void update_event(TetrisBoard *p_tetris_board, bool *p_is_running) {
+void update_event(TetrisBoard p_tetris_board[2], bool *p_is_running) {
     SDL_Event current_event;
     while (SDL_PollEvent(&current_event) != 0) {
         switch (current_event.type) {
@@ -21,26 +21,57 @@ void update_event(TetrisBoard *p_tetris_board, bool *p_is_running) {
             case SDL_KEYDOWN:
                 switch (current_event.key.keysym.sym) {
                     case SDLK_ESCAPE:
-                        // In Start Scene
+                        // One Player Scene
                         if (get_current_scene() == 1) {
-                            pause_tetris_counter();
+                            pause_tetris_counter(&p_tetris_board[0].m_counter);
                             set_current_scene(2);
                         }
+
+                        // Two Players Scene
+                        else if (get_current_scene() == 3) {
+                            pause_tetris_counter(&p_tetris_board[0].m_counter);
+                            pause_tetris_counter(&p_tetris_board[1].m_counter);
+                            set_current_scene(2);
+                        }
+
                         // In Pause Scene
                         else if (get_current_scene() == 2) {
-                            set_current_scene(1);
-                            unpause_tetris_counter();
+                            // One Player Scene
+                            if (get_last_scene() == 1) { 
+                                set_current_scene(1);
+                                unpause_tetris_counter(&p_tetris_board[0].m_counter);
+                            }
+                            // Two Players Scene
+                            else if (get_last_scene() == 3) {
+                                set_current_scene(3);
+                                unpause_tetris_counter(&p_tetris_board[0].m_counter);
+                                unpause_tetris_counter(&p_tetris_board[1].m_counter);
+                            }
                         }
                     break;
 
                     case SDLK_LEFT:
-                    case SDLK_a: 
-                        // In Game Scene
+                        // One Player Scene
                         if (get_current_scene() == 1) {
-                            move_left(p_tetris_board);
+                            move_left(&p_tetris_board[0]);
+                        }
+                        // Two Players Scene
+                        else if (get_current_scene() == 3) {
+                            move_left(&p_tetris_board[1]);
+                        }
+                    break;
+
+                    case SDLK_a: 
+                        // One Player Scene
+                        if (get_current_scene() == 1) {
+                            move_left(&p_tetris_board[0]);
+                        }
+                        // Two Players Scene
+                        else if (get_current_scene() == 3) {
+                            move_left(&p_tetris_board[0]);
                         }
                         // In Start Scene
-                        if (get_current_scene() == 0) {
+                        else if (get_current_scene() == 0) {
                             decrease_button_selection();
                         }
                         // In Pause Scene
@@ -50,13 +81,27 @@ void update_event(TetrisBoard *p_tetris_board, bool *p_is_running) {
                         break;
 
                     case SDLK_RIGHT:
-                    case SDLK_d:
-                        // In Game Scene
+                        // One Player Scene
                         if (get_current_scene() == 1) {
-                            move_right(p_tetris_board);
+                            move_right(&p_tetris_board[0]);
+                        }
+                        // Two Players Scene
+                        if (get_current_scene() == 3) {
+                            move_right(&p_tetris_board[1]);
+                        }
+                    break;
+
+                    case SDLK_d:
+                        // One Player Scene
+                        if (get_current_scene() == 1) {
+                            move_right(&p_tetris_board[0]);
+                        }
+                        // Two Players Scene
+                        else if (get_current_scene() == 3) {
+                            move_right(&p_tetris_board[0]);
                         }
                         // In Start Scene
-                        if (get_current_scene() == 0) {
+                        else if (get_current_scene() == 0) {
                             increase_button_selection();
                         }
                         // In Pause Scene
@@ -66,19 +111,46 @@ void update_event(TetrisBoard *p_tetris_board, bool *p_is_running) {
                         break;
 
                     case SDLK_UP:
+                        // One Player Scene
+                        if (get_current_scene() == 1) {
+                            rotate_piece_clockwise(&p_tetris_board[0]);
+                        }
+                        // Two Players Scene
+                        if (get_current_scene() == 3) {
+                            rotate_piece_clockwise(&p_tetris_board[1]);
+                        }
+                        break;
+
                     case SDLK_x:
                     case SDLK_w:
-                        // In Game Scene
+                        // One Player Scene
                         if (get_current_scene() == 1) {
-                            rotate_piece_clockwise(p_tetris_board);
+                            rotate_piece_clockwise(&p_tetris_board[0]);
+                        }
+                        // Two Players Scene
+                        if (get_current_scene() == 3) {
+                            rotate_piece_clockwise(&p_tetris_board[0]);
                         }
                         break;
 
                     case SDLK_DOWN:
-                    case SDLK_s:
-                        // In Game Scene
+                        // One Player Scene
                         if (get_current_scene() == 1) {
-                            accelerate_piece();
+                            accelerate_piece(&p_tetris_board[0].m_counter);
+                        }
+                        // Two Players Scene
+                        if (get_current_scene() == 3) {
+                            accelerate_piece(&p_tetris_board[1].m_counter);
+                        }
+                        break;
+                    case SDLK_s:
+                        // One Player Scene
+                        if (get_current_scene() == 1) {
+                            accelerate_piece(&p_tetris_board[0].m_counter);
+                        }
+                        // Two Players Scene
+                        if (get_current_scene() == 3) {
+                            accelerate_piece(&p_tetris_board[0].m_counter);
                         }
                         break;
 
@@ -89,28 +161,64 @@ void update_event(TetrisBoard *p_tetris_board, bool *p_is_running) {
                                 case 0:
                                     set_current_scene(1);
                                 break;
+                                case 1:
+                                    set_current_scene(3);
+                                break;
                                 case 2:
                                     printf("CLOSE GAME\n");
                                     *p_is_running = false;
                                 break;
                             }
                         }
+
                         // In Pause Scene
                         else if (get_current_scene() == 2) {
                             switch (get_pause_button_selection()) {
                                 case 0:
-                                    set_current_scene(1);
-                                    unpause_tetris_counter();
+                                    // One Player
+                                    if (get_last_scene() == 1) {
+                                        set_current_scene(1);
+                                        unpause_tetris_counter(&p_tetris_board[0].m_counter);
+                                    }
+                                    // Two Players
+                                    else if (get_last_scene() == 3) {
+                                        set_current_scene(3);
+                                        unpause_tetris_counter(&p_tetris_board[0].m_counter);
+                                        unpause_tetris_counter(&p_tetris_board[1].m_counter);
+                                    }
                                 break;
                                 case 1:
-                                    set_current_scene(1);
-                                    unpause_tetris_counter();
-                                    g_game_start = false;
+                                    // One Player
+                                    if (get_last_scene() == 1) {
+                                        set_current_scene(1);
+                                        unpause_tetris_counter(&p_tetris_board[0].m_counter);
+                                        p_tetris_board[0].m_game_start = false;
+                                    }
+                                    // Two Players
+                                    else if (get_last_scene() == 3) {
+                                        set_current_scene(3);
+                                        unpause_tetris_counter(&p_tetris_board[0].m_counter);
+                                        unpause_tetris_counter(&p_tetris_board[1].m_counter);
+                                        p_tetris_board[0].m_game_start = false;
+                                        p_tetris_board[1].m_game_start = false;
+                                    }
+
                                 break;
                                 case 2:
-                                    set_current_scene(0);
-                                    unpause_tetris_counter();
-                                    g_game_start = false;
+                                    // One Player
+                                    if (get_last_scene() == 1) {
+                                        set_current_scene(0);
+                                        unpause_tetris_counter(&p_tetris_board[0].m_counter);
+                                        p_tetris_board[0].m_game_start = false;
+                                    }
+                                    // Two Players
+                                    else if (get_last_scene() == 3) {
+                                        set_current_scene(0);
+                                        unpause_tetris_counter(&p_tetris_board[0].m_counter);
+                                        unpause_tetris_counter(&p_tetris_board[1].m_counter);
+                                        p_tetris_board[0].m_game_start = false;
+                                        p_tetris_board[1].m_game_start = false;
+                                    }
                                 break;
                             }
                         }
@@ -120,10 +228,24 @@ void update_event(TetrisBoard *p_tetris_board, bool *p_is_running) {
             case SDL_KEYUP:
                 switch (current_event.key.keysym.sym) {
                     case SDLK_DOWN:
-                    case SDLK_s:
-                        // In Game Scene
+                        // One Player Scene
                         if (get_current_scene() == 1) {
-                            reset_piece_acceleration();
+                            reset_piece_acceleration(&p_tetris_board[0].m_counter);
+                        }
+                        // Two Players Scene
+                        if (get_current_scene() == 3) {
+                            reset_piece_acceleration(&p_tetris_board[1].m_counter);
+                        }
+                        break;
+
+                    case SDLK_s:
+                        // One Player Scene
+                        if (get_current_scene() == 1) {
+                            reset_piece_acceleration(&p_tetris_board[0].m_counter);
+                        }
+                        // Two Players Scene
+                        if (get_current_scene() == 3) {
+                            reset_piece_acceleration(&p_tetris_board[0].m_counter);
                         }
                         break;
                 }

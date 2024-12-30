@@ -8,10 +8,10 @@
 #include <sys/types.h>
 #include "TetrisHandler.h"
 #include "TetrisPauseScene.h"
-#include "TetrisRenderer.h"
 #include "TetrisInputEvent.h"
 #include "TetrisStartScreen.h"
 #include "TetrisTime.h"
+#include "TextureRegistry.h"
 #include "GameWorld.h"
 
 
@@ -37,8 +37,6 @@ bool initialize_game_world() {
     p_window = SDL_CreateWindow("Tetris 95", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
     p_renderer = SDL_CreateRenderer(p_window, -1, SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED);
     register_textures(p_renderer);
-    init_tetris_board(&s_one_player_board);
-    init_tetris_time();
     init_scene();
     init_start_screen();
     init_pause_screen();
@@ -59,8 +57,8 @@ bool initialize_game_world() {
 bool run_game_world() {
 
     while (is_running) {
-        update_event(&s_one_player_board, &is_running);
-        update_game(&s_one_player_board, p_window, p_renderer, m_viewport);
+        update_event(s_players_board, &is_running);
+        update_game(s_players_board, p_window, p_renderer, m_viewport);
     }
 
     return 0;
