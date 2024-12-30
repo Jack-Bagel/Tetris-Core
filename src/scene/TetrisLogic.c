@@ -245,7 +245,6 @@ void clear_line(TetrisBoard *self, int line) {
     }
 }
 
-// TODO: Implement NES piece generation 
 void generate_new_piece(TetrisBoard *self) { 
 
     srand(self->m_seed + self->m_increment_seed);
@@ -278,9 +277,6 @@ void update_level(TetrisBoard *self) {
             update_speed(self);
         }
     }
-
-    printf("LINES: %i\n", self->m_lines_cleared);
-    printf("LEVEL: %i\n", self->m_current_level);
 }
 
 void update_speed(TetrisBoard *self) {
