@@ -1,6 +1,7 @@
 #include "Pieces.h"
 #include <TetrisUtils.h>
 #include <stdio.h>
+#include <time.h>
 
 void clear_tetris_grid(TetrisGrid *p_tetris_grid) {
     for (int i = 0; i < BOARD_HEIGHT; i++) {
@@ -80,6 +81,14 @@ int random_to_piece(int piece_number) {
         return EDGE;
     }
     return -1;
+}
+
+void reset_game_seed() {
+    s_game_seed = time(NULL);
+}
+
+u_int get_game_seed() {
+    return s_game_seed;
 }
 
 void print_grid(int tetris_grid[BOARD_HEIGHT][BOARD_WIDTH]) {

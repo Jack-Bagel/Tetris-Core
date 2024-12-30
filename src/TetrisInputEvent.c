@@ -3,12 +3,12 @@
 #include "TetrisPauseScene.h"
 #include "TetrisStartScreen.h"
 #include "TetrisTime.h"
+#include "TetrisUtils.h"
 #include <SDL2/SDL_events.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_keyboard.h>
 #include <SDL2/SDL_keycode.h>
-
-extern bool g_game_start;
+#include <SDL2/SDL_timer.h>
 
 void update_event(TetrisBoard p_tetris_board[2], bool *p_is_running) {
     SDL_Event current_event;
@@ -193,6 +193,7 @@ void update_event(TetrisBoard p_tetris_board[2], bool *p_is_running) {
                                         set_current_scene(1);
                                         unpause_tetris_counter(&p_tetris_board[0].m_counter);
                                         p_tetris_board[0].m_game_start = false;
+                                        reset_game_seed();
                                     }
                                     // Two Players
                                     else if (get_last_scene() == 3) {
@@ -201,6 +202,7 @@ void update_event(TetrisBoard p_tetris_board[2], bool *p_is_running) {
                                         unpause_tetris_counter(&p_tetris_board[1].m_counter);
                                         p_tetris_board[0].m_game_start = false;
                                         p_tetris_board[1].m_game_start = false;
+                                        reset_game_seed();
                                     }
 
                                 break;
@@ -210,6 +212,7 @@ void update_event(TetrisBoard p_tetris_board[2], bool *p_is_running) {
                                         set_current_scene(0);
                                         unpause_tetris_counter(&p_tetris_board[0].m_counter);
                                         p_tetris_board[0].m_game_start = false;
+                                        reset_game_seed();
                                     }
                                     // Two Players
                                     else if (get_last_scene() == 3) {
@@ -218,6 +221,7 @@ void update_event(TetrisBoard p_tetris_board[2], bool *p_is_running) {
                                         unpause_tetris_counter(&p_tetris_board[1].m_counter);
                                         p_tetris_board[0].m_game_start = false;
                                         p_tetris_board[1].m_game_start = false;
+                                        reset_game_seed();
                                     }
                                 break;
                             }

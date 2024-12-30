@@ -3,7 +3,6 @@
 #include "TetrisPauseScene.h"
 #include "TetrisRenderer.h"
 #include "TetrisStartScreen.h"
-#include "TetrisUtils.h"
 #include <SDL2/SDL_rect.h>
 #include <stdbool.h>
 

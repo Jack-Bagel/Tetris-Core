@@ -10,7 +10,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <sys/types.h>
-#include <time.h>
 
 bool init_tetris_board(TetrisBoard *self) {
 
@@ -28,6 +27,7 @@ bool init_tetris_board(TetrisBoard *self) {
     self->m_points = 0;
     self->m_lines_cleared = 0;
     self->m_current_level = 0;
+    self->m_increment_seed = 0;
 
     return true; // If everything initialized properly (TODO: add a check)
 }
@@ -83,9 +83,10 @@ void tetris_loop(TetrisBoard *self) {
         if (!init_tetris_board(self)) {
             printf("Failed to initialize Tetris Scene\n");
         }
-
+        
+        self->m_seed = get_game_seed();
         reset_tetris_counter(&self->m_counter);
-        generate_new_piece(self, time(NULL));
+        generate_new_piece(self);
         self->m_game_start = true;
         printf("GAME STARTS\n");
     }
@@ -113,7 +114,7 @@ void tetris_loop(TetrisBoard *self) {
         // Move to the next block
         reset_tetris_counter(&self->m_counter);
         self->m_offset = 6; // Initial position of the falling block
-        generate_new_piece(self, time(NULL));
+        generate_new_piece(self);
         return;
     }
 
@@ -245,9 +246,9 @@ void clear_line(TetrisBoard *self, int line) {
 }
 
 // TODO: Implement NES piece generation 
-void generate_new_piece(TetrisBoard *self, u_int random_seed) { 
+void generate_new_piece(TetrisBoard *self) { 
 
-    srand(random_seed);
+    srand(self->m_seed + self->m_increment_seed);
     int random_piece = random_to_piece(ceil(((double)rand() / (double)RAND_MAX) * 7));
 
     if (!self->m_game_start) {
@@ -256,6 +257,13 @@ void generate_new_piece(TetrisBoard *self, u_int random_seed) {
 
     self->m_piece = self->m_next_piece;
     self->m_next_piece = create_piece(random_piece);
+    
+    // If same piece twice, reroll
+    if (self->m_next_piece.type == self->m_piece.type) {
+        self->m_next_piece = create_piece(random_piece);
+    }
+
+    self->m_increment_seed++;
 }
 
 /** LEVELING AND SPEED **/

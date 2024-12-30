@@ -6,14 +6,14 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <sys/types.h>
+#include <time.h>
 #include "TetrisHandler.h"
 #include "TetrisPauseScene.h"
 #include "TetrisInputEvent.h"
 #include "TetrisStartScreen.h"
-#include "TetrisTime.h"
+#include "TetrisUtils.h"
 #include "TextureRegistry.h"
 #include "GameWorld.h"
-
 
 bool initialize_game_world() {
 
@@ -40,7 +40,7 @@ bool initialize_game_world() {
     init_scene();
     init_start_screen();
     init_pause_screen();
-
+    reset_game_seed();
     if(p_window == NULL) {
         printf("Failed to create window\n");
         return -1;

@@ -19,14 +19,17 @@ typedef struct TetrisBoard {
     TetrisGrid m_falling_piece_grid;
     bool m_game_start;
     Piece m_piece;
+    Piece m_next_piece;
+    u_int m_seed;
+    u_int m_increment_seed;
     int m_offset;
     u_long m_points;
     u_int m_lines_cleared;
     u_int m_current_level;
-    Piece m_next_piece;
     TetrisCounter m_counter;
 
 } TetrisBoard;
+
 
 extern TetrisGrid* get_tetris_grid(TetrisBoard *self);
 extern TetrisGrid* get_last_tetris_grid(TetrisBoard *self);
@@ -45,7 +48,7 @@ extern void move_right(TetrisBoard *self);
 
 // Tetris board loop
 static bool init_tetris_board(TetrisBoard *self);
-static void generate_new_piece(TetrisBoard *self, u_int u_int);
+static void generate_new_piece(TetrisBoard *self);
 static void make_piece_fall(TetrisBoard *self, int height_offset);
 static bool piece_collides(TetrisGrid *p_last_tetris_grid, TetrisGrid *p_falling_piece_grid);
 static void init_tetris_edges(TetrisBoard *self);
