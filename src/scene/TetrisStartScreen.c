@@ -8,17 +8,17 @@
 #include <stdio.h>
 #include <string.h>
 
-extern SDL_Texture *g_p_background;
-extern TTF_Font *g_p_font;
+extern SDL_Texture *g_start_menu_bkg;
+extern TTF_Font *g_font;
 
 void init_start_screen() {
-    Button temp_one_player = {.x = 450, .y = 400, .text = "One Player"};
+    Button temp_one_player = {.x = 150, .y = 600, .text = "One Player"};
     one_player = temp_one_player;
 
-    Button temp_two_players = {.x = 640, .y = 400, .text = "Two Players"};
+    Button temp_two_players = {.x = 370, .y = 600, .text = "Two Players"};
     two_players = temp_two_players;
 
-    Button temp_quit = {.x = 850, .y = 400, .text = "Quit Tetris"};
+    Button temp_quit = {.x = 250, .y = 650, .text = "Quit Tetris"};
     quit_game = temp_quit;
 
     text_color.r = 255; text_color.g = 255; text_color.b = 255;
@@ -27,7 +27,7 @@ void init_start_screen() {
 }
 
 void increase_button_selection() {
-    if (button_selection == 3) {
+    if (button_selection == 2) {
         button_selection = 0;
     }
 
@@ -49,20 +49,12 @@ u_int get_button_selection() {
     return button_selection;
 }
 
-void render_background(SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_Rect viewport) {
-    SDL_SetRenderDrawColor(p_renderer, 0, 0, 0, 0);
-    SDL_RenderClear(p_renderer);
-    const SDL_Rect background = {.x = 0, .y = 0, .w = viewport.w, .h = viewport.h};
-    // SDL_RenderSetLogicalSize(p_renderer, viewport.w, viewport.h);
-    SDL_RenderCopy(p_renderer, g_p_background, NULL, &background);
-}
-
 void render_buttons(SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_Rect viewport) {
     Button buttons[3] = {one_player, two_players, quit_game};
 
     for (int i=0; i < sizeof(buttons) / sizeof(buttons[0]); i++) {
         SDL_Surface* surface_message = 
-        TTF_RenderText_Solid(g_p_font, buttons[i].text, text_color); 
+        TTF_RenderText_Solid(g_font, buttons[i].text, text_color); 
         SDL_Texture* texture_message = SDL_CreateTextureFromSurface(p_renderer, surface_message);
         int tex_w = surface_message->w;
         int tex_h = surface_message->h;

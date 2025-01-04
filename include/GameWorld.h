@@ -3,8 +3,9 @@
 #include <stdbool.h>
 #include <SDL2/SDL.h>
 
-#define SCREEN_WIDTH 1440
-#define SCREEN_HEIGHT 810
+#define SCREEN_WIDTH 1024
+#define SCREEN_HEIGHT 884
+
 // Setup main application
 static bool is_running;
 static SDL_Window *p_window;
