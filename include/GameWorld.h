@@ -7,7 +7,6 @@
 #define SCREEN_HEIGHT 884
 
 // Setup main application
-static bool is_running;
 static SDL_Window *p_window;
 static SDL_Renderer *p_renderer;
 static const SDL_Rect m_viewport = {.x = 0, .y = 0, .w = SCREEN_WIDTH, .h = SCREEN_HEIGHT};

@@ -7,13 +7,13 @@
 #include <stdio.h>
 #include <sys/types.h>
 #include <time.h>
-#include "TetrisHandler.h"
-#include "TetrisPauseScene.h"
+#include "SceneHandler.h"
 #include "TetrisInputEvent.h"
-#include "TetrisStartScreen.h"
 #include "TetrisUtils.h"
 #include "TextureRegistry.h"
 #include "GameWorld.h"
+
+bool is_running = true;
 
 bool initialize_game_world() {
 
@@ -33,13 +33,10 @@ bool initialize_game_world() {
     }
 
     // Initialization
-    is_running = true;
     p_window = SDL_CreateWindow("Tetris 95", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
     p_renderer = SDL_CreateRenderer(p_window, -1, SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED);
     register_textures(p_renderer);
     init_scene();
-    init_start_screen();
-    init_pause_screen();
     reset_game_seed();
     if(p_window == NULL) {
         printf("Failed to create window\n");
@@ -57,7 +54,7 @@ bool initialize_game_world() {
 bool run_game_world() {
 
     while (is_running) {
-        update_event(s_players_board, &is_running);
+        update_event(s_players_board);
         update_game(s_players_board, p_window, p_renderer, m_viewport);
     }
 

@@ -21,12 +21,14 @@ set(PROJECT_SOURCE_FILES
     src/TetrisInputEvent.c
     src/Button.c
     src/TextureRegistry.c
+    src/TetrisLogic.c
+    src/TetrisRenderer.c
 
-    src/scene/TetrisHandler.c
-    src/scene/TetrisLogic.c
-    src/scene/TetrisRenderer.c
-    src/scene/TetrisStartScreen.c
-    src/scene/TetrisPauseScreen.c
+    src/scene/SceneHandler.c
+    src/scene/PauseMenuScene.c
+    src/scene/MainMenuScene.c
+    src/scene/OnePlayerScene.c
+    src/scene/TwoPlayerScene.c
 )
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON) # Fixes includes path

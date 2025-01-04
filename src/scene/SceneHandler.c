@@ -1,0 +1,67 @@
+#include "SceneHandler.h"
+#include "MainMenuScene.h"
+#include "PauseMenuScene.h"
+#include "OnePlayerScene.h"
+#include "TwoPlayerScene.h"
+#include "MenuScene.h"
+#include "PlayableScene.h"
+#include "TetrisLogic.h"
+#include <SDL2/SDL_rect.h>
+#include <stdbool.h>
+
+extern SDL_Texture *g_one_player_bkg;
+extern SDL_Texture *g_two_player_bkg;
+extern SDL_Texture *g_two_player_bkg;
+extern SDL_Texture *g_start_menu_bkg;
+extern void (*handle_event)(TetrisBoard[2], SDL_Event *);
+
+static MenuScene main_menu;
+static MenuScene pause_menu;
+static PlayableScene one_player;
+static PlayableScene two_player;
+
+void init_scene() {
+    s_current_scene = 0;
+    s_last_scene = 0;
+    init_main_menu(&main_menu);
+    init_pause_menu(&pause_menu);
+    init_one_player(&one_player);
+    init_two_player(&two_player);
+    init_event_handler();
+}
+
+void set_current_scene(unsigned int scene) {
+    s_last_scene = s_current_scene;
+    s_current_scene = scene;
+}
+
+u_int get_current_scene() {
+    return s_current_scene;
+}
+
+u_int get_last_scene() {
+    return s_last_scene;
+}
+
+void update_game(TetrisBoard players_board[2], SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_Rect viewport) {
+
+    // Start screen
+    if (s_current_scene == 0) {
+        main_menu.update(p_window, p_renderer, viewport);
+    }
+
+    // Pause screen
+    else if (s_current_scene == 2) {
+        pause_menu.update(p_window, p_renderer, viewport);
+    }
+
+    // One player
+    else if (s_current_scene == 1) {
+        one_player.update(p_window, p_renderer, viewport, &players_board[0]);
+    }
+    
+    // Two players
+    else if (s_current_scene == 3) {
+        two_player.update(p_window, p_renderer, viewport, players_board);
+    }
+}
