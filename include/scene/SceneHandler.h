@@ -5,6 +5,13 @@
 #include <stdbool.h>
 #include <sys/types.h>
 
+typedef enum SceneID {
+    MAIN_MENU,
+    PAUSE_MENU,
+    ONE_PLAYER,
+    TWO_PLAYER
+} SceneID;
+
 static u_int s_current_scene;
 static u_int s_last_scene;
 

@@ -6,6 +6,22 @@
 extern SDL_Texture *g_two_player_bkg;
 extern void (*handle_event)(TetrisBoard[2], SDL_Event *);
 
+// Player 1
+static bool pressed_left = false;
+static bool pressed_right = false;
+static bool pressed_rotate = false;
+static unsigned int first_elapsed_time[3] = {0, 0, 0};
+static unsigned int elapsed_time[3] = {0, 0, 0};
+// Player 2
+static bool pressed_left_two = false;
+static bool pressed_right_two = false;
+static bool pressed_rotate_two = false;
+static unsigned int first_elapsed_time_two[3] = {0, 0, 0};
+static unsigned int elapsed_time_two[3] = {0, 0, 0};
+
+#define INPUT_LAG 30
+#define WAITING_LAG 150
+
 void init_two_player(PlayableScene *scene) {
     scene->update = &update_playable;
 }
@@ -13,6 +29,7 @@ void init_two_player(PlayableScene *scene) {
 void update_playable(SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_Rect viewport, TetrisBoard players_board[2]) {
     tetris_loop(&players_board[0]);
     tetris_loop(&players_board[1]);
+    movements(players_board);
     render_playable(p_window, p_renderer, viewport, players_board);
     handle_event = &events;
 }
@@ -45,6 +62,84 @@ void render_playable(SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_R
     draw_screen(p_renderer, viewport);
 }
 
+void movements(TetrisBoard p_tetris_board[2]) {
+    //Playe One
+
+    // Move left
+    if (pressed_left && elapsed_time[0] == 0) {
+        first_elapsed_time[0] = SDL_GetTicks();
+        elapsed_time[0] = SDL_GetTicks();
+        move_left(&p_tetris_board[0]);
+    }
+
+    else if (pressed_left && (SDL_GetTicks() - first_elapsed_time[0]) > WAITING_LAG && (SDL_GetTicks() - elapsed_time[0]) > INPUT_LAG) {
+        move_left(&p_tetris_board[0]);
+        elapsed_time[0] = SDL_GetTicks();
+    }
+
+    // Move right
+    if (pressed_right && elapsed_time[1] == 0) {
+        first_elapsed_time[1] = SDL_GetTicks();
+        elapsed_time[1] = SDL_GetTicks();
+        move_right(&p_tetris_board[0]);
+    }
+
+    else if (pressed_right && (SDL_GetTicks() - first_elapsed_time[1]) > WAITING_LAG && (SDL_GetTicks() - elapsed_time[1]) > INPUT_LAG) {
+        move_right(&p_tetris_board[0]);
+        elapsed_time[1] = SDL_GetTicks();
+    }
+
+    // Rotate
+    if (pressed_rotate && elapsed_time[2] == 0) {
+        first_elapsed_time[2] = SDL_GetTicks();
+        elapsed_time[2] = SDL_GetTicks();
+        rotate_piece_clockwise(&p_tetris_board[0]);
+    }
+
+    else if (pressed_rotate && (SDL_GetTicks() - first_elapsed_time[2]) > WAITING_LAG && (SDL_GetTicks() - elapsed_time[2]) > INPUT_LAG) {
+        rotate_piece_clockwise(&p_tetris_board[0]);
+        elapsed_time[2] = SDL_GetTicks();
+    }
+
+    //Playe Two
+
+    // Move left
+    if (pressed_left_two && elapsed_time_two[0] == 0) {
+        first_elapsed_time_two[0] = SDL_GetTicks();
+        elapsed_time_two[0] = SDL_GetTicks();
+        move_left(&p_tetris_board[1]);
+    }
+
+    else if (pressed_left_two && (SDL_GetTicks() - first_elapsed_time_two[0]) > WAITING_LAG && (SDL_GetTicks() - elapsed_time_two[0]) > INPUT_LAG) {
+        elapsed_time_two[0] = SDL_GetTicks();
+        move_left(&p_tetris_board[1]);
+    }
+
+    // Move right
+    if (pressed_right_two && elapsed_time_two[1] == 0) {
+        first_elapsed_time_two[1] = SDL_GetTicks();
+        elapsed_time_two[1] = SDL_GetTicks();
+        move_right(&p_tetris_board[1]);
+    }
+
+    else if (pressed_right_two && (SDL_GetTicks() - first_elapsed_time_two[1]) > WAITING_LAG && (SDL_GetTicks() - elapsed_time_two[1]) > INPUT_LAG) {
+        elapsed_time_two[1] = SDL_GetTicks();
+        move_right(&p_tetris_board[1]);
+    }
+
+    // Rotate
+    if (pressed_rotate_two && elapsed_time_two[2] == 0) {
+        first_elapsed_time_two[2] = SDL_GetTicks();
+        elapsed_time_two[2] = SDL_GetTicks();
+        rotate_piece_clockwise(&p_tetris_board[1]);
+    }
+
+    else if (pressed_rotate_two && (SDL_GetTicks() - first_elapsed_time_two[2]) > WAITING_LAG && (SDL_GetTicks() - elapsed_time_two[2]) > INPUT_LAG) {
+        rotate_piece_clockwise(&p_tetris_board[1]);
+        elapsed_time_two[2] = SDL_GetTicks();
+    }
+}
+
 void events(TetrisBoard p_tetris_board[2], SDL_Event *event) {
     switch (event->type) {
         case SDL_KEYDOWN:
@@ -52,22 +147,22 @@ void events(TetrisBoard p_tetris_board[2], SDL_Event *event) {
                 case SDLK_ESCAPE:
                     pause_tetris_counter(&p_tetris_board[0].m_counter);
                     pause_tetris_counter(&p_tetris_board[1].m_counter);
-                    set_current_scene(2);
+                    set_current_scene(PAUSE_MENU);
                 break;
 
 
                 // Player 1 Controls
                 case SDLK_a:
-                    move_left(&p_tetris_board[0]);
+                    pressed_left = true;
                 break;
 
                 case SDLK_d:
-                    move_right(&p_tetris_board[0]);
+                    pressed_right = true;
                 break;
 
                 case SDLK_w:
                 case SDLK_x:
-                    rotate_piece_clockwise(&p_tetris_board[0]);
+                    pressed_rotate = true;
                 break;
 
                 case SDLK_s:
@@ -76,15 +171,15 @@ void events(TetrisBoard p_tetris_board[2], SDL_Event *event) {
 
                 // Player 2 Controls
                 case SDLK_LEFT:
-                    move_left(&p_tetris_board[1]);
+                    pressed_left_two = true;
                 break;
 
                 case SDLK_RIGHT:
-                    move_right(&p_tetris_board[1]);
+                    pressed_right_two = true;
                 break;
 
                 case SDLK_UP:
-                    rotate_piece_clockwise(&p_tetris_board[1]);
+                    pressed_rotate_two = true;
                 break;
 
                 case SDLK_DOWN:
@@ -97,14 +192,50 @@ void events(TetrisBoard p_tetris_board[2], SDL_Event *event) {
         case SDL_KEYUP:
             switch (event->key.keysym.sym) {
                 // Player 1 Controls
+                case SDLK_a:
+                    first_elapsed_time[0] = 0;
+                    elapsed_time[0] = 0;
+                    pressed_left = false;
+                break;
+
+                case SDLK_d:
+                    first_elapsed_time[1] = 0;
+                    elapsed_time[1] = 0;
+                    pressed_right = false;
+                break;
+
+                case SDLK_w:
+                case SDLK_x:
+                    first_elapsed_time[2] = 0;
+                    elapsed_time[2] = 0;
+                    pressed_rotate = false;
+                break;
+
                 case SDLK_s:
                     reset_piece_acceleration(&p_tetris_board[0].m_counter);
                 break;
 
                 // Player 2 Controls
+                case SDLK_LEFT:
+                    first_elapsed_time_two[0] = 0;
+                    elapsed_time_two[0] = 0;
+                    pressed_left_two = false;
+                break;
+                case SDLK_RIGHT:
+                    first_elapsed_time_two[1] = 0;
+                    elapsed_time_two[1] = 0;
+                    pressed_right_two = false;
+                break;
+
+                case SDLK_UP:
+                    first_elapsed_time_two[2] = 0;
+                    elapsed_time_two[2] = 0;
+                    pressed_rotate_two = false;
+                break;
                 case SDLK_DOWN:
                     reset_piece_acceleration(&p_tetris_board[1].m_counter);
                 break;
+
             }
     }
 

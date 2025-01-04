@@ -71,12 +71,12 @@ void events(TetrisBoard p_tetris_board[2], SDL_Event *event) {
                 case SDLK_ESCAPE:
                     // One Player Scene
                     if (get_last_scene() == 1) { 
-                        set_current_scene(1);
+                        set_current_scene(ONE_PLAYER);
                         unpause_tetris_counter(&p_tetris_board[0].m_counter);
                     }
                     // Two Players Scene
                     else if (get_last_scene() == 3) {
-                        set_current_scene(3);
+                        set_current_scene(TWO_PLAYER);
                         unpause_tetris_counter(&p_tetris_board[0].m_counter);
                         unpause_tetris_counter(&p_tetris_board[1].m_counter);
                     }
@@ -97,13 +97,13 @@ void events(TetrisBoard p_tetris_board[2], SDL_Event *event) {
                         // Continue Game
                         case 0:
                             // One Player
-                            if (get_last_scene() == 1) {
-                                set_current_scene(1);
+                            if (get_last_scene() == ONE_PLAYER) {
+                                set_current_scene(ONE_PLAYER);
                                 unpause_tetris_counter(&p_tetris_board[0].m_counter);
                             }
                             // Two Players
-                            else if (get_last_scene() == 3) {
-                                set_current_scene(3);
+                            else if (get_last_scene() == TWO_PLAYER) {
+                                set_current_scene(TWO_PLAYER);
                                 unpause_tetris_counter(&p_tetris_board[0].m_counter);
                                 unpause_tetris_counter(&p_tetris_board[1].m_counter);
                             }
@@ -112,15 +112,15 @@ void events(TetrisBoard p_tetris_board[2], SDL_Event *event) {
                         // Reset Game
                         case 1:
                             // One Player
-                            if (get_last_scene() == 1) {
-                                set_current_scene(1);
+                            if (get_last_scene() == ONE_PLAYER) {
+                                set_current_scene(ONE_PLAYER);
                                 unpause_tetris_counter(&p_tetris_board[0].m_counter);
                                 p_tetris_board[0].m_game_start = false;
                                 reset_game_seed();
                             }
                             // Two Players
-                            else if (get_last_scene() == 3) {
-                                set_current_scene(3);
+                            else if (get_last_scene() == TWO_PLAYER) {
+                                set_current_scene(TWO_PLAYER);
                                 unpause_tetris_counter(&p_tetris_board[0].m_counter);
                                 unpause_tetris_counter(&p_tetris_board[1].m_counter);
                                 p_tetris_board[0].m_game_start = false;
@@ -133,15 +133,15 @@ void events(TetrisBoard p_tetris_board[2], SDL_Event *event) {
                         // Return to Main Menu
                         case 2:
                             // One Player
-                            if (get_last_scene() == 1) {
-                                set_current_scene(0);
+                            if (get_last_scene() == ONE_PLAYER) {
+                                set_current_scene(MAIN_MENU);
                                 unpause_tetris_counter(&p_tetris_board[0].m_counter);
                                 p_tetris_board[0].m_game_start = false;
                                 reset_game_seed();
                             }
                             // Two Players
-                            else if (get_last_scene() == 3) {
-                                set_current_scene(0);
+                            else if (get_last_scene() == TWO_PLAYER) {
+                                set_current_scene(MAIN_MENU);
                                 unpause_tetris_counter(&p_tetris_board[0].m_counter);
                                 unpause_tetris_counter(&p_tetris_board[1].m_counter);
                                 p_tetris_board[0].m_game_start = false;

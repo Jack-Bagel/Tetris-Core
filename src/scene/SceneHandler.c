@@ -45,23 +45,19 @@ u_int get_last_scene() {
 
 void update_game(TetrisBoard players_board[2], SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_Rect viewport) {
 
-    // Start screen
-    if (s_current_scene == 0) {
+    if (s_current_scene == MAIN_MENU) {
         main_menu.update(p_window, p_renderer, viewport);
     }
 
-    // Pause screen
-    else if (s_current_scene == 2) {
+    else if (s_current_scene == PAUSE_MENU) {
         pause_menu.update(p_window, p_renderer, viewport);
     }
 
-    // One player
-    else if (s_current_scene == 1) {
-        one_player.update(p_window, p_renderer, viewport, &players_board[0]);
+    else if (s_current_scene == ONE_PLAYER) {
+        one_player.update(p_window, p_renderer, viewport, players_board);
     }
-    
-    // Two players
-    else if (s_current_scene == 3) {
+
+    else if (s_current_scene == TWO_PLAYER) {
         two_player.update(p_window, p_renderer, viewport, players_board);
     }
 }

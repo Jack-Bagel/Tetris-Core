@@ -76,11 +76,11 @@ void events(TetrisBoard p_tetris_board[2], SDL_Event *event) {
                 switch (button_selection) {
                     // Start One Player Game
                     case 0:
-                        set_current_scene(1);
+                        set_current_scene(ONE_PLAYER);
                     break;
                     // Start Two Player Game
                     case 1:
-                        set_current_scene(3);
+                        set_current_scene(TWO_PLAYER);
                     break;
                     // Exit Game
                     case 2:
