@@ -304,8 +304,14 @@ void update_speed(TetrisBoard *self) {
 /** MOVEMENT **/
 
 void rotate_piece_clockwise(TetrisBoard *self) {
-    if (can_rotate(self)) {
-        rotate_up_piece(&self->m_piece);
+    if (can_rotate_clockwise(self)) {
+        rotate_clockwise(&self->m_piece);
+    }
+}
+
+void rotate_piece_counter_clockwise(TetrisBoard *self) {
+    if (can_rotate_counter_clockwise(self)) {
+        rotate_counter_clockwise(&self->m_piece);
     }
 }
 
@@ -350,11 +356,47 @@ bool can_move_right(TetrisBoard *self) {
 }
 
 
-bool can_rotate(TetrisBoard *self) {
+bool can_rotate_clockwise(TetrisBoard *self) {
     TetrisGrid temp_grid = {.grid = {0}};
     TetrisGrid temp_falling_piece_grid = {.grid = {0}};
     Piece temp_piece = self->m_piece;
-    rotate_up_piece(&temp_piece);
+    rotate_clockwise(&temp_piece);
+    int height = get_tetris_counter(&self->m_counter) + 0;
+    // Wer simulate a piece with the rotation and check if it collides with something
+    // Reusing make_piece_fall() logic.
+    for (int i=0; i < 4; i++) {
+        for (int j=0; j < 4; j++) {
+            temp_grid.grid[i][j] = temp_piece.tetromino[i][j] * temp_piece.color;
+        }
+    }
+
+    int i = 0;
+    while (i + height < BOARD_HEIGHT) {
+        for (int j=0; j < 4; j++) {
+
+            if (i + 1 + height >= BOARD_HEIGHT) {
+                continue;
+            }
+
+            // Update the falling piece
+            temp_falling_piece_grid.grid[i + 1 + height][j + self->m_offset] = temp_grid.grid[i][j];
+        }
+
+        i++;
+    }
+
+    if (piece_collides(&self->m_last_tetris_grid, &temp_falling_piece_grid)) {
+        return false;
+    }
+
+    return true;
+}
+
+bool can_rotate_counter_clockwise(TetrisBoard *self) {
+    TetrisGrid temp_grid = {.grid = {0}};
+    TetrisGrid temp_falling_piece_grid = {.grid = {0}};
+    Piece temp_piece = self->m_piece;
+    rotate_counter_clockwise(&temp_piece);
     int height = get_tetris_counter(&self->m_counter) + 0;
     // Wer simulate a piece with the rotation and check if it collides with something
     // Reusing make_piece_fall() logic.

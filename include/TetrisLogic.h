@@ -43,6 +43,7 @@ extern void tetris_loop(TetrisBoard *self);
 
 // Controls 
 extern void rotate_piece_clockwise(TetrisBoard *self);
+extern void rotate_piece_counter_clockwise(TetrisBoard *self);
 extern void move_left(TetrisBoard *self);
 extern void move_right(TetrisBoard *self);
 
@@ -57,7 +58,8 @@ static void clear_line(TetrisBoard *self, int line);
 static void game_over(TetrisBoard *self);
 static bool can_move_left(TetrisBoard *self);
 static bool can_move_right(TetrisBoard *self);
-static bool can_rotate(TetrisBoard *self);
+static bool can_rotate_clockwise(TetrisBoard *self);
+static bool can_rotate_counter_clockwise(TetrisBoard *self);
 
 static void update_level(TetrisBoard *self);
 static void update_speed(TetrisBoard *self);

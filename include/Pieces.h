@@ -25,6 +25,35 @@ typedef enum Tetromino {
 
 } Tetromino;
 
+typedef struct Tetrominos {
+    const int line_block[4][4];
+    const int line_block_rot[4][4];
+
+    const int square_block[4][4];
+
+    const int T_block[4][4];
+    const int T_block_rot_1[4][4];
+    const int T_block_rot_2[4][4];
+    const int T_block_rot_3[4][4];
+
+    const int L_block[4][4];
+    const int L_block_rot_1[4][4];
+    const int L_block_rot_2[4][4];
+    const int L_block_rot_3[4][4];
+
+    const int R_L_block[4][4];
+    const int R_L_block_rot_1[4][4];
+    const int R_L_block_rot_2[4][4];
+    const int R_L_block_rot_3[4][4];
+
+    const int Z_block[4][4];
+    const int Z_block_rot[4][4];
+
+    const int R_Z_block[4][4];
+    const int R_Z_block_rot[4][4];
+
+} Tetrominos;
+
 // Piece colors must be odd for collision detection
 typedef enum PieceColor {
     BLACK = 0,
@@ -49,4 +78,5 @@ typedef struct Piece {
 
 extern Piece create_piece(Tetromino tetromino);
 extern int *get_block_color(PieceColor color);
-extern void rotate_up_piece(Piece *piece);
+extern void rotate_clockwise(Piece *piece);
+extern void rotate_counter_clockwise(Piece *piece);
