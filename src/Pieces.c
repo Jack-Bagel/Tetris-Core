@@ -296,10 +296,13 @@ void rotate_clockwise(Piece *piece) {
             piece->type = R_Z_BLOCK;
             break;
 
+        case SQUARE_BLOCK:
+            break;
+
         default:
             memcpy(piece->tetromino, tetrominos.square_block, sizeof(int) * 4 * 4);
             piece->type = SQUARE_BLOCK;
-            printf("Something went horribly wrong");
+            printf("Something went horribly wrong\n");
             break;
     }
 }
@@ -386,10 +389,13 @@ void rotate_counter_clockwise(Piece *piece) {
             piece->type = R_Z_BLOCK;
             break;
 
+        case SQUARE_BLOCK:
+            break;
+
         default:
             memcpy(piece->tetromino, tetrominos.square_block, sizeof(int) * 4 * 4);
             piece->type = SQUARE_BLOCK;
-            printf("Something went horribly wrong");
+            printf("Something went horribly wrong\n");
             break;
     }
 }

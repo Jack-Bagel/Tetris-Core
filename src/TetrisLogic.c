@@ -24,6 +24,7 @@ bool init_tetris_board(TetrisBoard *self) {
     self->m_offset = 6;
     self->m_points = 0;
     self->m_lines_cleared = 0;
+    self->m_total_lines_cleared = 0;
     self->m_current_level = 0;
     self->m_increment_seed = 0;
 
@@ -72,6 +73,13 @@ int get_level(TetrisBoard *self) {
     return self->m_current_level;
 }
 
+int get_total_lines(TetrisBoard *self) {
+    return self->m_total_lines_cleared;
+}
+
+bool get_game_over(TetrisBoard *self) {
+    return self->m_is_game_over;
+}
 
 /** GAME LOGIC **/
 void tetris_loop(TetrisBoard *self) {
@@ -89,38 +97,39 @@ void tetris_loop(TetrisBoard *self) {
         printf("GAME STARTS\n");
     }
 
-    make_piece_fall(self, 0);
+    if (!self->m_is_game_over) {
+        make_piece_fall(self, 0);
 
+        if (piece_collides(&self->m_last_tetris_grid, &self->m_falling_piece_grid)) {
 
-    if (piece_collides(&self->m_last_tetris_grid, &self->m_falling_piece_grid)) {
-        
-        // Place the block one step behind the collision
-        make_piece_fall(self, -1);
-        // update the last tetris grid
+            // Place the block one step behind the collision
+            make_piece_fall(self, -1);
+            // update the last tetris grid
+            AND_tetris_grid(&self->m_tetris_grid, &self->m_last_tetris_grid);
+            combine_tetris_grids(&self->m_tetris_grid, &self->m_falling_piece_grid);
+
+            // Clear the possible lines
+            clear_lines(self);
+
+            // Update last tetris grid
+            memcpy(self->m_last_tetris_grid.grid, self->m_tetris_grid.grid, sizeof(int) * BOARD_HEIGHT * BOARD_WIDTH);
+
+            // Check for game over
+            game_over(self);
+
+            // Move to the next block
+            reset_tetris_counter(&self->m_counter);
+            self->m_offset = 6; // Initial position of the falling block
+            generate_new_piece(self);
+            return;
+        }
+
+        // Clear screen for the falling piece
         AND_tetris_grid(&self->m_tetris_grid, &self->m_last_tetris_grid);
+
+        // Render piece on the Tetris Grid
         combine_tetris_grids(&self->m_tetris_grid, &self->m_falling_piece_grid);
-
-        // Clear the possible lines 
-        clear_lines(self);
-
-        // Update last tetris grid
-        memcpy(self->m_last_tetris_grid.grid, self->m_tetris_grid.grid, sizeof(int) * BOARD_HEIGHT * BOARD_WIDTH);
-
-        // Check for game over
-        game_over(self);
-
-        // Move to the next block
-        reset_tetris_counter(&self->m_counter);
-        self->m_offset = 6; // Initial position of the falling block
-        generate_new_piece(self);
-        return;
     }
-
-    // Clear screen for the falling piece
-    AND_tetris_grid(&self->m_tetris_grid, &self->m_last_tetris_grid);
-
-    // Render piece on the Tetris Grid
-    combine_tetris_grids(&self->m_tetris_grid, &self->m_falling_piece_grid);
 }
 
 bool piece_collides(TetrisGrid *p_last_tetris_grid, TetrisGrid *p_falling_piece_grid) {
@@ -177,7 +186,6 @@ void game_over(TetrisBoard *self) {
     for (int j=2; j < BOARD_WIDTH - 2; j++) {
         if (self->m_last_tetris_grid.grid[2][j] != 0 && !self->m_is_game_over) {
             self->m_is_game_over = true;
-            set_current_scene(GAME_OVER);
             printf("GAME OVER\n");
         }
     }
@@ -208,21 +216,25 @@ void clear_lines(TetrisBoard *self) {
     if (line_count == 1) {
         self->m_points += 40 * (self->m_current_level + 1);
         self->m_lines_cleared += 1;
+        self->m_total_lines_cleared += 1;
         printf("ONE LINE CLEARED\n");
     }
     else if (line_count == 2) {
         self->m_points += 100 * (self->m_current_level + 1);
         self->m_lines_cleared += 2;
+        self->m_total_lines_cleared += 2;
         printf("TWO LINE CLEARED\n");
     }
     else if (line_count == 3) {
         self->m_points += 300 * (self->m_current_level + 1);
         self->m_lines_cleared += 3;
+        self->m_total_lines_cleared += 3;
         printf("THREE LINE CLEARED\n");
     }
     else if (line_count == 4) {
         self->m_points += 1200 * (self->m_current_level + 1);
         self->m_lines_cleared += 4;
+        self->m_total_lines_cleared += 4;
         printf("TETRIS\n");
     }
 

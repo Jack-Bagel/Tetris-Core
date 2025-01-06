@@ -29,12 +29,16 @@ void init_two_player(PlayableScene *scene) {
     scene->update = &update_playable;
 }
 
-void update_playable(SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_Rect viewport, TetrisBoard players_board[2]) {
-    tetris_loop(&players_board[0]);
-    tetris_loop(&players_board[1]);
-    movements(players_board);
-    render_playable(p_window, p_renderer, viewport, players_board);
+void update_playable(SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_Rect viewport, TetrisBoard player_board[2]) {
+    tetris_loop(&player_board[0]);
+    tetris_loop(&player_board[1]);
+    movements(player_board);
+    render_playable(p_window, p_renderer, viewport, player_board);
     handle_event = &events;
+
+    if (get_game_over(&player_board[0]) && get_game_over(&player_board[1])) {
+        set_current_scene(GAME_OVER);
+    }
 }
 
 void render_playable(SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_Rect viewport, TetrisBoard players_board[2]) {
@@ -55,11 +59,13 @@ void render_playable(SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_R
     // Player 1
     render_score(&players_board[0], p_window, p_renderer, viewport, -490, -165);
     render_level(&players_board[0], p_window, p_renderer, viewport, -710, -560);
+    render_lines(&players_board[0], p_window, p_renderer, viewport, 223, 845);
     render_next_piece(get_next_piece(&players_board[0]), next_piece_size, p_window, p_renderer, viewport, -373, -100);
 
     // Player 2
     render_score(&players_board[1], p_window, p_renderer, viewport, - 205, -165);
     render_level(&players_board[1], p_window, p_renderer, viewport, + 50, -560);
+    render_lines(&players_board[1], p_window, p_renderer, viewport, 845, 845);
     render_next_piece(get_next_piece(&players_board[1]), next_piece_size, p_window, p_renderer, viewport, -291, 170);
 
     draw_screen(p_renderer, viewport);

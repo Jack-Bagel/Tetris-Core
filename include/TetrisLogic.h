@@ -25,6 +25,7 @@ typedef struct TetrisBoard {
     int m_offset;
     unsigned long m_points;
     unsigned int m_lines_cleared;
+    unsigned int m_total_lines_cleared;
     unsigned int m_current_level;
     TetrisCounter m_counter;
 
@@ -38,6 +39,9 @@ extern Piece* get_falling_piece(TetrisBoard *self);
 extern int get_points(TetrisBoard *self);
 extern int get_level(TetrisBoard *self);
 extern Piece get_next_piece(TetrisBoard *self);
+extern int get_total_lines(TetrisBoard *self);
+extern bool get_game_over(TetrisBoard *self);
+
 
 extern void tetris_loop(TetrisBoard *self);
 

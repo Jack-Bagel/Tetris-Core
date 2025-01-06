@@ -7,12 +7,13 @@
 #include <SDL_ttf.h>
 
 extern TTF_Font *g_font;
-extern SDL_Texture *g_start_menu_bkg;
+extern SDL_Texture *g_game_over_bkg;
+extern SDL_Texture *g_two_player_game_over_bkg;
 extern void (*handle_event)(TetrisBoard[2], SDL_Event *);
 extern bool is_running;
 
-static Button restart_button = {.x = 150, .y = 600, .text = "Restart"};
-static Button menu_button = {.x = 250, .y = 650, .text = "Menu"};
+static Button restart_button = {.x = 500, .y = 250, .text = "Restart"};
+static Button menu_button = {.x = 700, .y = 250, .text = "Menu"};
 static SDL_Color text_color = {255, 255, 255};
 static unsigned int button_selection = 0;
 
@@ -26,13 +27,36 @@ void update_game_over(SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_
 }
 
 void render_game_over(SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_Rect viewport, TetrisBoard player_board[2]) {
+    SDL_Texture *background;
+    if (get_last_scene() == ONE_PLAYER) {
+        background = g_game_over_bkg;
+    }
+    else {
+        background = g_two_player_game_over_bkg;
+    }
+
     clear_screen(p_renderer);
-    render_background(g_start_menu_bkg, p_window, p_renderer, viewport);
+    render_background(background, p_window, p_renderer, viewport);
     Button buttons[2] = {restart_button, menu_button};
 
+    // Render Stats
+    if (get_last_scene() == ONE_PLAYER) {
+        render_score(&player_board[0], p_window, p_renderer, viewport, -500, 245);
+        render_level(&player_board[0], p_window, p_renderer, viewport, -504, -50);
+        render_lines(&player_board[0], p_window, p_renderer, viewport, 323, 675);
+    }
+    else {
+        render_score(&player_board[0], p_window, p_renderer, viewport, -540, 270);
+        render_level(&player_board[0], p_window, p_renderer, viewport, -540, -30);
+        render_lines(&player_board[0], p_window, p_renderer, viewport, 285, 688);
+        render_score(&player_board[1], p_window, p_renderer, viewport, -110, 270);
+        render_level(&player_board[1], p_window, p_renderer, viewport, -110, -30);
+        render_lines(&player_board[1], p_window, p_renderer, viewport, 710, 688);
+    }
+
+    // Render Buttons
     for (int i=0; i < sizeof(buttons) / sizeof(buttons[0]); i++) {
-        SDL_Surface* surface_message = 
-        TTF_RenderText_Solid(g_font, buttons[i].text, text_color); 
+        SDL_Surface* surface_message = TTF_RenderText_Solid(g_font, buttons[i].text, text_color);
         SDL_Texture* texture_message = SDL_CreateTextureFromSurface(p_renderer, surface_message);
         int tex_w = surface_message->w;
         int tex_h = surface_message->h;
@@ -49,6 +73,7 @@ void render_game_over(SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_
         SDL_DestroyTexture(texture_message);
     }
 
+    // Render All
     SDL_RenderSetLogicalSize(p_renderer, viewport.w, viewport.h);
     SDL_RenderPresent(p_renderer);
 }

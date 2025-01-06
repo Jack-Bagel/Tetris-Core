@@ -21,24 +21,29 @@ void init_one_player(PlayableScene *p_scene) {
     p_scene->update = &update_playable;
 }
 
-void update_playable(SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_Rect viewport, TetrisBoard players_board[2]) {
-    tetris_loop(players_board);
-    render_playable(p_window, p_renderer, viewport, players_board);
-    movements(players_board);
+void update_playable(SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_Rect viewport, TetrisBoard player_board[2]) {
+    tetris_loop(player_board);
+    render_playable(p_window, p_renderer, viewport, player_board);
+    movements(player_board);
     handle_event = &events;
+
+    if (get_game_over(&player_board[0])) {
+        set_current_scene(GAME_OVER);
+    }
 }
 
-void render_playable(SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_Rect viewport, TetrisBoard players_board[2]) {
+void render_playable(SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_Rect viewport, TetrisBoard player_board[2]) {
     int piece_size = 32.0; // Size of tetris blocks, move to rendering
     int next_piece_size = 29.0; // Size of tetris blocks, move to rendering
 
     clear_screen(p_renderer);
-    render_tetris_grid(get_tetris_grid(&players_board[0])->grid, piece_size, p_window, p_renderer, viewport, 0, 0);
+    render_tetris_grid(get_tetris_grid(&player_board[0])->grid, piece_size, p_window, p_renderer, viewport, 0, 0);
     render_background(g_one_player_bkg ,p_window, p_renderer, viewport);
 
-    render_score(&players_board[0], p_window, p_renderer, viewport, 0, 0);
-    render_level(&players_board[0], p_window, p_renderer, viewport, 0, 0);
-    render_next_piece(get_next_piece(&players_board[0]), next_piece_size, p_window, p_renderer, viewport, 0, 0);
+    render_score(&player_board[0], p_window, p_renderer, viewport, 0, 0);
+    render_level(&player_board[0], p_window, p_renderer, viewport, 0, 0);
+    render_lines(&player_board[0], p_window, p_renderer, viewport, 620, 60);
+    render_next_piece(get_next_piece(&player_board[0]), next_piece_size, p_window, p_renderer, viewport, 0, 0);
     draw_screen(p_renderer, viewport);
 }
 
