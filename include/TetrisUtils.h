@@ -2,10 +2,10 @@
 #include <stdbool.h>
 #include "TetrisLogic.h"
 
-static u_int s_game_seed;
+static unsigned int s_game_seed;
 
 extern void reset_game_seed();
-extern u_int get_game_seed();
+extern unsigned int get_game_seed();
 extern bool are_grids_equals(TetrisGrid *p_first_grid, TetrisGrid *p_second_grid);
 extern void clear_tetris_grid(TetrisGrid *tetris_grid);
 extern void combine_tetris_grids(TetrisGrid *p_first_grid, TetrisGrid *p_second_grid);

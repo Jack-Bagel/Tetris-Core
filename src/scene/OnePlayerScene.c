@@ -2,7 +2,7 @@
 #include "SceneHandler.h"
 #include "TetrisLogic.h"
 #include "TetrisRenderer.h"
-#include <SDL2/SDL_timer.h>
+#include <SDL_timer.h>
 
 extern SDL_Texture *g_one_player_bkg;
 extern void (*handle_event)(TetrisBoard[2], SDL_Event *);

@@ -3,11 +3,11 @@
 #include "TetrisLogic.h"
 #include "TetrisTime.h"
 #include "TetrisUtils.h"
-#include <SDL2/SDL_events.h>
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_keyboard.h>
-#include <SDL2/SDL_keycode.h>
-#include <SDL2/SDL_timer.h>
+#include <SDL_events.h>
+#include <SDL.h>
+#include <SDL_keyboard.h>
+#include <SDL_keycode.h>
+#include <SDL_timer.h>
 
 extern bool is_running;
 void (*handle_event)(TetrisBoard[2], SDL_Event *);

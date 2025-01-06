@@ -1,7 +1,6 @@
 #pragma once
 #include <stdbool.h>
 #include <stdint.h>
-#include <sys/types.h>
 #include "Pieces.h"
 #include "TetrisTime.h"
 
@@ -18,14 +17,15 @@ typedef struct TetrisBoard {
     TetrisGrid m_last_tetris_grid;
     TetrisGrid m_falling_piece_grid;
     bool m_game_start;
+    bool m_is_game_over;
     Piece m_piece;
     Piece m_next_piece;
-    u_int m_seed;
-    u_int m_increment_seed;
+    unsigned int m_seed;
+    unsigned int m_increment_seed;
     int m_offset;
-    u_long m_points;
-    u_int m_lines_cleared;
-    u_int m_current_level;
+    unsigned long m_points;
+    unsigned int m_lines_cleared;
+    unsigned int m_current_level;
     TetrisCounter m_counter;
 
 } TetrisBoard;

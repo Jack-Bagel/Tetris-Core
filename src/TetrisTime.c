@@ -1,6 +1,6 @@
 #include "TetrisTime.h"
-#include <SDL2/SDL_stdinc.h>
-#include <SDL2/SDL_timer.h>
+#include <SDL_stdinc.h>
+#include <SDL_timer.h>
 #include <sys/types.h>
 
 #define ACCELERATION 6
@@ -19,8 +19,8 @@ void init_tetris_time(TetrisCounter *self) {
 }
 
 int get_tetris_counter(TetrisCounter *self) {
-        u_int current_time = SDL_GetTicks();
-        u_int elapsed_time = current_time - self->m_last_update_time;
+        unsigned int current_time = SDL_GetTicks();
+        unsigned int elapsed_time = current_time - self->m_last_update_time;
 
         if (elapsed_time >= self->m_tick_interval && !self->m_is_paused) {
             self->m_counter++;
@@ -59,7 +59,7 @@ void pause_tetris_counter(TetrisCounter *self) {
 void unpause_tetris_counter(TetrisCounter *self) {
     if (self->m_is_paused) {
         self->m_is_paused = false;
-        u_int pause_end_time = SDL_GetTicks();
+        unsigned int pause_end_time = SDL_GetTicks();
         self->m_last_update_time += (pause_end_time - self->m_start_paused_time);
         printf("PAUSED: %f\n", self->m_paused_time / 1000.0);
     }

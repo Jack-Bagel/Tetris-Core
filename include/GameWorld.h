@@ -1,7 +1,7 @@
 #pragma once
 #include "TetrisLogic.h"
 #include <stdbool.h>
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
 #define SCREEN_WIDTH 1024
 #define SCREEN_HEIGHT 884

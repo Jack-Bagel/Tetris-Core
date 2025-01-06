@@ -3,7 +3,7 @@
 #include "SceneHandler.h"
 #include "TetrisLogic.h"
 #include "TetrisRenderer.h"
-#include <SDL2/SDL_ttf.h>
+#include <SDL_ttf.h>
 
 extern TTF_Font *g_font;
 extern SDL_Texture *g_start_menu_bkg;

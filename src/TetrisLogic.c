@@ -1,11 +1,12 @@
 #include "TetrisLogic.h"
+#include "SceneHandler.h"
 #include "TetrisUtils.h"
 #include "Pieces.h"
 #include "TetrisTime.h"
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_events.h>
-#include <SDL2/SDL_keycode.h>
-#include <SDL2/SDL_timer.h>
+#include <SDL.h>
+#include <SDL_events.h>
+#include <SDL_keycode.h>
+#include <SDL_timer.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
@@ -23,6 +24,7 @@ bool init_tetris_board(TetrisBoard *self) {
     // init member variables
     init_tetris_time(&self->m_counter);
     self->m_game_start = false;
+    self->m_is_game_over = false;
     self->m_offset = 6;
     self->m_points = 0;
     self->m_lines_cleared = 0;
@@ -177,9 +179,10 @@ void make_piece_fall(TetrisBoard *self, int height_offset) {
 
 void game_over(TetrisBoard *self) {
     for (int j=2; j < BOARD_WIDTH - 2; j++) {
-        if (self->m_last_tetris_grid.grid[2][j] != 0) {
-            printf("GAME OVER!!\n");
-            printf("YOUR SCORE IS: %lu\n", self->m_points);
+        if (self->m_last_tetris_grid.grid[2][j] != 0 && !self->m_is_game_over) {
+            self->m_is_game_over = true;
+            set_current_scene(GAME_OVER);
+            printf("GAME OVER\n");
         }
     }
 }

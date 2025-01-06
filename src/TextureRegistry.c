@@ -1,6 +1,6 @@
 #include "TextureRegistry.h"
-#include <SDL2/SDL_image.h>
-#include <SDL2/SDL_ttf.h>
+#include <SDL_image.h>
+#include <SDL_ttf.h>
 
 SDL_Texture *g_block_tex;
 SDL_Texture *g_start_menu_bkg;

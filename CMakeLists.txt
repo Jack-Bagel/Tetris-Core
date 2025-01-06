@@ -25,8 +25,9 @@ set(PROJECT_SOURCE_FILES
     src/TetrisRenderer.c
 
     src/scene/SceneHandler.c
-    src/scene/PauseMenuScene.c
     src/scene/MainMenuScene.c
+    src/scene/PauseMenuScene.c
+    src/scene/GameOverScene.c
     src/scene/OnePlayerScene.c
     src/scene/TwoPlayerScene.c
 )
@@ -37,9 +38,9 @@ add_executable(${PROJECT_NAME} ${PROJECT_SOURCE_FILES})
 # Libraries
 target_link_libraries(${PROJECT_NAME}
     ${OPENGL_LIBRARY}
-    /usr/local/lib/libSDL2.a
-    /usr/local/lib/libSDL2_image.a
-    /usr/local/lib/libSDL2_ttf.a
+    SDL2::SDL2
+    SDL2_image::SDL2_image
+    SDL2_ttf::SDL2_ttf
     # ${SDL2_MIXER_LIBRARIES}
     m # math
     freetype

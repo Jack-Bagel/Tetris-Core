@@ -87,7 +87,7 @@ void reset_game_seed() {
     s_game_seed = time(NULL);
 }
 
-u_int get_game_seed() {
+unsigned int get_game_seed() {
     return s_game_seed;
 }
 
