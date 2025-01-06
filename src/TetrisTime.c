@@ -1,7 +1,7 @@
 #include "TetrisTime.h"
 #include <SDL_stdinc.h>
 #include <SDL_timer.h>
-#include <sys/types.h>
+#include <stdio.h>
 
 #define ACCELERATION 6
 

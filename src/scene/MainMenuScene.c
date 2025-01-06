@@ -4,6 +4,7 @@
 #include "TetrisLogic.h"
 #include "TetrisRenderer.h"
 #include <SDL_ttf.h>
+#include <stdio.h>
 
 extern TTF_Font *g_font;
 extern SDL_Texture *g_start_menu_bkg;

@@ -4,13 +4,9 @@
 #include "Pieces.h"
 #include "TetrisTime.h"
 #include <SDL.h>
-#include <SDL_events.h>
-#include <SDL_keycode.h>
-#include <SDL_timer.h>
 #include <stdbool.h>
 #include <stdio.h>
-#include <string.h>
-#include <sys/types.h>
+#include <stdlib.h>
 
 bool init_tetris_board(TetrisBoard *self) {
 
@@ -188,7 +184,7 @@ void game_over(TetrisBoard *self) {
 }
 
 void clear_lines(TetrisBoard *self) {
-    u_short line_count = 0;
+    unsigned int line_count = 0;
     bool full_line = true;
 
     // Find every lines in the grid
@@ -251,17 +247,26 @@ void clear_line(TetrisBoard *self, int line) {
 void generate_new_piece(TetrisBoard *self) { 
 
     srand(self->m_seed + self->m_increment_seed);
-    int random_piece = random_to_piece(ceil(((double)rand() / (double)RAND_MAX) * 7));
+    int random_piece = random_to_piece(rand() % 7 + 1);
 
     if (!self->m_game_start) {
         self->m_next_piece = create_piece(random_piece);
     }
+
+    // Could be a reroll function
+    self->m_increment_seed++;
+    srand(self->m_seed + self->m_increment_seed);
+    random_piece = random_to_piece(rand() % 7 + 1);
 
     self->m_piece = self->m_next_piece;
     self->m_next_piece = create_piece(random_piece);
     
     // If same piece twice, reroll
     if (self->m_next_piece.type == self->m_piece.type) {
+        self->m_increment_seed++;
+        srand(self->m_seed + self->m_increment_seed);
+        random_piece = random_to_piece(rand() % 7 + 1);
+
         self->m_next_piece = create_piece(random_piece);
     }
 
