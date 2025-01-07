@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 3.2)
+cmake_minimum_required (VERSION 3.5)
 project (TetrisCore)
 
 # All packages used
@@ -33,6 +33,7 @@ set(PROJECT_SOURCE_FILES
 )
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON) # Fixes includes path
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/release)
 add_executable(${PROJECT_NAME} ${PROJECT_SOURCE_FILES})
 
 # Libraries

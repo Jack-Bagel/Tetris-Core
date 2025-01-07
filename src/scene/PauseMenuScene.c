@@ -70,12 +70,12 @@ void events(TetrisBoard p_tetris_board[2], SDL_Event *event) {
 
                 case SDLK_ESCAPE:
                     // One Player Scene
-                    if (get_last_scene() == 1) { 
+                    if (get_last_scene() == ONE_PLAYER) {
                         set_current_scene(ONE_PLAYER);
                         unpause_tetris_counter(&p_tetris_board[0].m_counter);
                     }
                     // Two Players Scene
-                    else if (get_last_scene() == 3) {
+                    else if (get_last_scene() == TWO_PLAYER) {
                         set_current_scene(TWO_PLAYER);
                         unpause_tetris_counter(&p_tetris_board[0].m_counter);
                         unpause_tetris_counter(&p_tetris_board[1].m_counter);
