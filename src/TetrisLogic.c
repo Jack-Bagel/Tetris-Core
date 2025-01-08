@@ -4,9 +4,18 @@
 #include "Pieces.h"
 #include "TetrisTime.h"
 #include <SDL.h>
+#include <SDL_mixer.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+
+extern Mix_Chunk *g_movement_sound;
+extern Mix_Chunk *g_rotate_sound;
+extern Mix_Chunk *g_touch_ground_sound;
+extern Mix_Chunk *g_line_clear_sound;
+extern Mix_Chunk *g_four_lines_clear_sound;
+extern Mix_Music *g_tetris_theme_music;
+
 
 bool init_tetris_board(TetrisBoard *self) {
 
@@ -27,6 +36,11 @@ bool init_tetris_board(TetrisBoard *self) {
     self->m_total_lines_cleared = 0;
     self->m_current_level = 0;
     self->m_increment_seed = 0;
+
+    //TODO: Move this inside a sound/music manager
+    if ( Mix_PlayMusic(g_tetris_theme_music, -1) != 0 ) {
+        printf("Failed to play music: %s\n", Mix_GetError());
+    }
 
     return true; // If everything initialized properly (TODO: add a check)
 }
@@ -101,9 +115,12 @@ void tetris_loop(TetrisBoard *self) {
         make_piece_fall(self, 0);
 
         if (piece_collides(&self->m_last_tetris_grid, &self->m_falling_piece_grid)) {
+            // Play sound
+            Mix_PlayChannel(-1, g_touch_ground_sound, 0);
 
             // Place the block one step behind the collision
             make_piece_fall(self, -1);
+
             // update the last tetris grid
             AND_tetris_grid(&self->m_tetris_grid, &self->m_last_tetris_grid);
             combine_tetris_grids(&self->m_tetris_grid, &self->m_falling_piece_grid);
@@ -136,7 +153,7 @@ bool piece_collides(TetrisGrid *p_last_tetris_grid, TetrisGrid *p_falling_piece_
     
     // Piece touches ground
     for (int j = 0; j < BOARD_WIDTH; j++) {
-        if (p_falling_piece_grid->grid[BOARD_HEIGHT - 1][j] != 0) { 
+        if (p_falling_piece_grid->grid[BOARD_HEIGHT - 1][j] != 0) {
             return true;
         } 
     }
@@ -217,30 +234,35 @@ void clear_lines(TetrisBoard *self) {
         self->m_points += 40 * (self->m_current_level + 1);
         self->m_lines_cleared += 1;
         self->m_total_lines_cleared += 1;
+        Mix_PlayChannel( -1, g_line_clear_sound, 0);
         printf("ONE LINE CLEARED\n");
     }
     else if (line_count == 2) {
         self->m_points += 100 * (self->m_current_level + 1);
         self->m_lines_cleared += 2;
         self->m_total_lines_cleared += 2;
+        Mix_PlayChannel( -1, g_line_clear_sound, 0);
         printf("TWO LINE CLEARED\n");
     }
     else if (line_count == 3) {
         self->m_points += 300 * (self->m_current_level + 1);
         self->m_lines_cleared += 3;
         self->m_total_lines_cleared += 3;
+        Mix_PlayChannel( -1, g_line_clear_sound, 0);
         printf("THREE LINE CLEARED\n");
     }
     else if (line_count == 4) {
         self->m_points += 1200 * (self->m_current_level + 1);
         self->m_lines_cleared += 4;
         self->m_total_lines_cleared += 4;
+        Mix_PlayChannel( -1, g_four_lines_clear_sound, 0);
         printf("TETRIS\n");
     }
 
     if (line_count > 0) {
         update_level(self);
     }
+
 }
 
 void clear_line(TetrisBoard *self, int line) {
@@ -326,23 +348,27 @@ void update_speed(TetrisBoard *self) {
 void rotate_piece_clockwise(TetrisBoard *self) {
     if (can_rotate_clockwise(self)) {
         rotate_clockwise(&self->m_piece);
+        Mix_PlayChannel( -1, g_rotate_sound, 0);
     }
 }
 
 void rotate_piece_counter_clockwise(TetrisBoard *self) {
     if (can_rotate_counter_clockwise(self)) {
         rotate_counter_clockwise(&self->m_piece);
+        Mix_PlayChannel( -1, g_rotate_sound, 0);
     }
 }
 
 void move_left(TetrisBoard *self) {
     if (can_move_left(self)) {
         self->m_offset--;
+        Mix_PlayChannel( -1, g_movement_sound, 0 );
     }
 }
 void move_right(TetrisBoard *self) {
     if (can_move_right(self)) {
         self->m_offset++;
+        Mix_PlayChannel( -1, g_movement_sound, 0 );
     }
 }
 // Move all the bool functions directly inside the movement functions

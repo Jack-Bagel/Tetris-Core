@@ -1,16 +1,13 @@
 #include <SDL_image.h>
 #include <SDL_render.h>
-#include <SDL_timer.h>
 #include <SDL_ttf.h>
-#include <SDL_ttf.h>
+#include <SDL_mixer.h>
 #include <stdbool.h>
 #include <stdio.h>
-#include <sys/types.h>
-#include <time.h>
 #include "SceneHandler.h"
 #include "TetrisInputEvent.h"
 #include "TetrisUtils.h"
-#include "TextureRegistry.h"
+#include "ResourceRegistry.h"
 #include "GameWorld.h"
 
 bool is_running = true;
@@ -18,7 +15,7 @@ bool is_running = true;
 bool initialize_game_world() {
 
     // Make sure everything is gucci
-    if(SDL_Init(SDL_INIT_VIDEO) != 0) {
+    if(SDL_Init(SDL_INIT_EVERYTHING) != 0) {
         printf("Failed to initialize the SDL2 library\n");
         return -1;
     }
@@ -32,12 +29,20 @@ bool initialize_game_world() {
         printf("Failed to initialize the SDL2_ttf library\n");
     }
 
+    if (Mix_OpenAudio( 44100, MIX_DEFAULT_FORMAT, 2, 1024) < 0) {
+        printf("Failed to initialize the SDL2_mixer library\n");
+    }
+
     // Initialization
     p_window = SDL_CreateWindow("Tetris 95", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
     p_renderer = SDL_CreateRenderer(p_window, -1, SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED);
-    register_textures(p_renderer);
+    register_resources(p_renderer);
     init_scene();
     reset_game_seed();
+
+
+    Mix_VolumeMusic(15);
+    Mix_Volume(-1, 12);
     if(p_window == NULL) {
         printf("Failed to create window\n");
         return -1;
@@ -70,6 +75,7 @@ bool exit_game_world() {
     p_renderer = NULL;
     IMG_Quit();
     TTF_Quit();
+    Mix_Quit();
     SDL_Quit();
 
     return 0;

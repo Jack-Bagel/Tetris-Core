@@ -1,5 +1,8 @@
 #include "Button.h"
 #include "GameOverScene.h"
+
+#include <SDL_mixer.h>
+
 #include "SceneHandler.h"
 #include "TetrisLogic.h"
 #include "TetrisRenderer.h"
@@ -9,8 +12,11 @@
 extern TTF_Font *g_font;
 extern SDL_Texture *g_game_over_bkg;
 extern SDL_Texture *g_two_player_game_over_bkg;
-extern void (*handle_event)(TetrisBoard[2], SDL_Event *);
+extern Mix_Chunk *g_next_button_sound;
+extern Mix_Chunk *g_click_button_sound;
+
 extern bool is_running;
+extern void (*handle_event)(TetrisBoard[2], SDL_Event *);
 
 static Button restart_button = {.x = 500, .y = 250, .text = "Restart"};
 static Button menu_button = {.x = 700, .y = 250, .text = "Menu"};
@@ -86,14 +92,18 @@ void events(TetrisBoard p_tetris_board[2], SDL_Event *event) {
             case SDLK_LEFT:
             case SDLK_a:
                 decrease_button_selection();
+                Mix_PlayChannel( -1, g_next_button_sound, 0);
             break;
 
             case SDLK_RIGHT:
             case SDLK_d:
                 increase_button_selection();
+                Mix_PlayChannel( -1, g_next_button_sound, 0);
             break;
 
             case SDLK_RETURN:
+                    Mix_PlayChannel( -1, g_click_button_sound, 0);
+
                     switch (button_selection) {
                         // Reset Game
                         case 0:
