@@ -1,8 +1,8 @@
 #include "TetrisRenderer.h"
 #include "TetrisLogic.h"
-#include <SDL_ttf.h>
-#include <SDL_image.h>
-#include <SDL_render.h>
+#include <SDL2/SDL_ttf.h>
+#include <SDL2/SDL_image.h>
+#include <SDL2/SDL_render.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -39,8 +39,8 @@ void render_block(SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_Rect
 int* index_to_position(int index_i, int index_j, int size, SDL_Window *p_window, int offset_x, int offset_y) {
     int *position = malloc(sizeof(int) * 2); // Free in render_tetris_grid()
 
-    position[1] = index_j*size + (317 + offset_x);
-    position[0] = index_i*size + (90 + offset_y);
+    position[1] = index_j*size + offset_x;
+    position[0] = index_i*size + offset_y;
 
     return position;
 }
@@ -67,7 +67,7 @@ void render_score(TetrisBoard *p_tetris_board, SDL_Window *p_window, SDL_Rendere
     int tex_w = surface_message->w;
     int tex_h = surface_message->h;
 
-    const SDL_Rect points_rect = {.x = 830 + offset_x, .y = 240 + offset_y, .w = tex_w * 1.4f, .h = tex_h * 1.4f};
+    const SDL_Rect points_rect = {.x = offset_x, .y = offset_y, .w = tex_w * 1.4f, .h = tex_h * 1.4f};
     SDL_RenderCopy(p_renderer, texture_message, NULL, &points_rect);
 
     SDL_FreeSurface(surface_message);
@@ -87,7 +87,7 @@ void render_level(TetrisBoard *p_tetris_board, SDL_Window *p_window, SDL_Rendere
     int tex_w = surface_message->w;
     int tex_h = surface_message->h;
 
-    const SDL_Rect level_rect = {.x = 830 + offset_x, .y = 635 + offset_y, .w = tex_w * 1.2f, .h = tex_h * 1.2f};
+    const SDL_Rect level_rect = {.x = offset_x, .y = offset_y, .w = tex_w * 1.2f, .h = tex_h * 1.2f};
     SDL_RenderCopy(p_renderer, texture_message, NULL, &level_rect);
 
     SDL_FreeSurface(surface_message);
@@ -135,8 +135,8 @@ void render_next_piece(Piece next_piece, int piece_size, SDL_Window *p_window, S
 int* index_to_position_next_piece(int index_i, int index_j, int size, SDL_Window *p_window, int offset_x, int offset_y) {
     int *position = malloc(sizeof(int) * 2); // Free in render_tetris_grid()
 
-    position[1] = index_j*size + (790) + offset_x;
-    position[0] = index_i*size + (420) + offset_y;
+    position[1] = index_j*size + offset_x;
+    position[0] = index_i*size + offset_y;
 
     return position;
 }

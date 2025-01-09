@@ -2,7 +2,7 @@
 #include "SceneHandler.h"
 #include "TetrisLogic.h"
 #include "TetrisRenderer.h"
-#include <SDL_timer.h>
+#include <SDL2/SDL_timer.h>
 
 extern SDL_Texture *g_one_player_bkg;
 extern void (*handle_event)(TetrisBoard[2], SDL_Event *);
@@ -37,13 +37,13 @@ void render_playable(SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_R
     int next_piece_size = 29.0; // Size of tetris blocks, move to rendering
 
     clear_screen(p_renderer);
-    render_tetris_grid(get_tetris_grid(&player_board[0])->grid, piece_size, p_window, p_renderer, viewport, 0, 0);
+    render_tetris_grid(player_board[0].m_tetris_grid.grid, piece_size, p_window, p_renderer, viewport, 317, 90);
     render_background(g_one_player_bkg ,p_window, p_renderer, viewport);
 
-    render_score(&player_board[0], p_window, p_renderer, viewport, 0, 0);
-    render_level(&player_board[0], p_window, p_renderer, viewport, 0, 0);
+    render_score(&player_board[0], p_window, p_renderer, viewport, 830, 240);
+    render_level(&player_board[0], p_window, p_renderer, viewport, 830, 635);
     render_lines(&player_board[0], p_window, p_renderer, viewport, 620, 60);
-    render_next_piece(get_next_piece(&player_board[0]), next_piece_size, p_window, p_renderer, viewport, 0, 0);
+    render_next_piece(get_next_piece(&player_board[0]), next_piece_size, p_window, p_renderer, viewport, 790, 420);
     draw_screen(p_renderer, viewport);
 }
 

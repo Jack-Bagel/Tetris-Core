@@ -50,23 +50,23 @@ void render_playable(SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_R
     clear_screen(p_renderer);
 
     // Render grids behind background
-    render_tetris_grid(get_tetris_grid(&players_board[0])->grid, piece_size, p_window, p_renderer, viewport, -336, 15);
-    render_tetris_grid(get_tetris_grid(&players_board[1])->grid, piece_size, p_window, p_renderer, viewport, + 278, 15);
+    render_tetris_grid(players_board[0].m_tetris_grid.grid, piece_size, p_window, p_renderer, viewport, -19, 105);
+    render_tetris_grid(players_board[1].m_tetris_grid.grid, piece_size, p_window, p_renderer, viewport, + 595, 105);
     render_background(g_two_player_bkg ,p_window, p_renderer, viewport);
 
     // Render UI on top
 
     // Player 1
-    render_score(&players_board[0], p_window, p_renderer, viewport, -490, -165);
-    render_level(&players_board[0], p_window, p_renderer, viewport, -710, -560);
+    render_score(&players_board[0], p_window, p_renderer, viewport, 340, 75);
+    render_level(&players_board[0], p_window, p_renderer, viewport, 120, 75);
     render_lines(&players_board[0], p_window, p_renderer, viewport, 223, 845);
-    render_next_piece(get_next_piece(&players_board[0]), next_piece_size, p_window, p_renderer, viewport, -373, -100);
+    render_next_piece(get_next_piece(&players_board[0]), next_piece_size, p_window, p_renderer, viewport, 417, 320);
 
     // Player 2
-    render_score(&players_board[1], p_window, p_renderer, viewport, - 205, -165);
-    render_level(&players_board[1], p_window, p_renderer, viewport, + 50, -560);
+    render_score(&players_board[1], p_window, p_renderer, viewport, 625, 75);
+    render_level(&players_board[1], p_window, p_renderer, viewport, 880, 75);
     render_lines(&players_board[1], p_window, p_renderer, viewport, 845, 845);
-    render_next_piece(get_next_piece(&players_board[1]), next_piece_size, p_window, p_renderer, viewport, -291, 170);
+    render_next_piece(get_next_piece(&players_board[1]), next_piece_size, p_window, p_renderer, viewport, 499, 590);
 
     draw_screen(p_renderer, viewport);
 }

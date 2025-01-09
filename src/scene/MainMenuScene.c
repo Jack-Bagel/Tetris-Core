@@ -1,12 +1,12 @@
 #include "Button.h"
 #include "MainMenuScene.h"
 
-#include <SDL_mixer.h>
+#include <SDL2/SDL_mixer.h>
 
 #include "SceneHandler.h"
 #include "TetrisLogic.h"
 #include "TetrisRenderer.h"
-#include <SDL_ttf.h>
+#include <SDL2/SDL_ttf.h>
 #include <stdio.h>
 
 extern TTF_Font *g_font;

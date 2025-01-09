@@ -7,8 +7,7 @@
 #include "MenuScene.h"
 #include "PlayableScene.h"
 #include "TetrisLogic.h"
-#include <SDL_rect.h>
-#include <stdbool.h>
+#include <SDL2/SDL_rect.h>
 
 extern SDL_Texture *g_one_player_bkg;
 extern SDL_Texture *g_two_player_bkg;

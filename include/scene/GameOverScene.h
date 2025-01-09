@@ -1,13 +1,13 @@
 #pragma once
 #include "TetrisLogic.h"
-#include <SDL_events.h>
-#include <SDL_render.h>
+#include <SDL2/SDL_events.h>
+#include <SDL2/SDL_render.h>
 #include "MenuScene.h"
 #include "TetrisLogic.h"
-#include <SDL_events.h>
-#include <SDL_pixels.h>
-#include <SDL_render.h>
-#include <SDL_video.h>
+#include <SDL2/SDL_events.h>
+#include <SDL2/SDL_pixels.h>
+#include <SDL2/SDL_render.h>
+#include <SDL2/SDL_video.h>
 
 typedef struct GameOverScene {
     void (*update)(SDL_Window*, SDL_Renderer*, const SDL_Rect, TetrisBoard[2]);

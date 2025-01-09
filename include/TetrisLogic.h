@@ -31,14 +31,9 @@ typedef struct TetrisBoard {
 
 } TetrisBoard;
 
-
-extern TetrisGrid* get_tetris_grid(TetrisBoard *self);
-extern TetrisGrid* get_last_tetris_grid(TetrisBoard *self);
-extern TetrisGrid* get_falling_piece_grid(TetrisBoard *self);
-extern Piece* get_falling_piece(TetrisBoard *self);
+extern Piece get_next_piece(TetrisBoard *self);
 extern int get_points(TetrisBoard *self);
 extern int get_level(TetrisBoard *self);
-extern Piece get_next_piece(TetrisBoard *self);
 extern int get_total_lines(TetrisBoard *self);
 extern bool get_game_over(TetrisBoard *self);
 

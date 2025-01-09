@@ -1,10 +1,10 @@
 #pragma once
 #include "PlayableScene.h"
 #include "TetrisLogic.h"
-#include <SDL_events.h>
-#include <SDL_pixels.h>
-#include <SDL_render.h>
-#include <SDL_video.h>
+#include <SDL2/SDL_events.h>
+#include <SDL2/SDL_pixels.h>
+#include <SDL2/SDL_render.h>
+#include <SDL2/SDL_video.h>
 
 extern void init_two_player(PlayableScene *scene);
 

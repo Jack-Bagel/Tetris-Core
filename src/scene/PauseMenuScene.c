@@ -1,13 +1,13 @@
 #include "Button.h"
 #include "PauseMenuScene.h"
 
-#include <SDL_mixer.h>
+#include <SDL2/SDL_mixer.h>
 
 #include "SceneHandler.h"
 #include "TetrisLogic.h"
 #include "TetrisRenderer.h"
 #include "TetrisUtils.h"
-#include <SDL_ttf.h>
+#include <SDL2/SDL_ttf.h>
 
 extern TTF_Font *g_font;
 extern SDL_Texture *g_pause_menu_bkg;

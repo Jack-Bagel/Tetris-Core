@@ -33,18 +33,24 @@ set(PROJECT_SOURCE_FILES
 )
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON) # Fixes includes path
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/release)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/build)
 add_executable(${PROJECT_NAME} ${PROJECT_SOURCE_FILES})
 
 # Libraries
 target_link_libraries(${PROJECT_NAME}
     ${OPENGL_LIBRARY}
-    SDL2::SDL2
-    SDL2_image::SDL2_image
-    SDL2_ttf::SDL2_ttf
-    SDL2_mixer::SDL2_mixer
-    # m # math
-    # freetype
+    /usr/local/lib/libSDL2main.a
+    /usr/local/lib/libSDL2.a
+    /usr/local/lib/libSDL2_image.a
+    /usr/local/lib/libSDL2_ttf.a
+    /usr/local/lib/libSDL2_mixer.a
+    m # math
+    freetype
+
+    # SDL2::SDL2
+    # SDL2_image::SDL2_image
+    # SDL2_ttf::SDL2_ttf
+    # SDL2_mixer::SDL2_mixer
 )
 
 # Includes

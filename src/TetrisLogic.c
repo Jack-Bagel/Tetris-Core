@@ -1,10 +1,9 @@
 #include "TetrisLogic.h"
-#include "SceneHandler.h"
 #include "TetrisUtils.h"
 #include "Pieces.h"
 #include "TetrisTime.h"
-#include <SDL.h>
-#include <SDL_mixer.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_mixer.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -57,22 +56,6 @@ void init_tetris_edges(TetrisBoard *self) {
     for (int j = 0; j < BOARD_WIDTH; j++) {
         self->m_tetris_grid.grid[BOARD_HEIGHT - 1][j] = GREY;
     }
-}
-
-TetrisGrid* get_tetris_grid(TetrisBoard *self) {
-    return &self->m_tetris_grid;
-}
-
-TetrisGrid* get_last_tetris_grid(TetrisBoard *self) {
-    return &self->m_last_tetris_grid;
-}
-
-TetrisGrid* get_falling_piece_grid(TetrisBoard *self) {
-    return &self->m_falling_piece_grid;
-}
-
-Piece* get_falling_piece(TetrisBoard *self) {
-    return &self->m_piece;
 }
 
 Piece get_next_piece(TetrisBoard *self) {

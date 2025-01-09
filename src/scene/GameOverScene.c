@@ -1,13 +1,13 @@
 #include "Button.h"
 #include "GameOverScene.h"
 
-#include <SDL_mixer.h>
+#include <SDL2/SDL_mixer.h>
 
 #include "SceneHandler.h"
 #include "TetrisLogic.h"
 #include "TetrisRenderer.h"
 #include "TetrisUtils.h"
-#include <SDL_ttf.h>
+#include <SDL2/SDL_ttf.h>
 
 extern TTF_Font *g_font;
 extern SDL_Texture *g_game_over_bkg;
@@ -47,16 +47,16 @@ void render_game_over(SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_
 
     // Render Stats
     if (get_last_scene() == ONE_PLAYER) {
-        render_score(&player_board[0], p_window, p_renderer, viewport, -500, 245);
-        render_level(&player_board[0], p_window, p_renderer, viewport, -504, -50);
+        render_score(&player_board[0], p_window, p_renderer, viewport, 330, 485);
+        render_level(&player_board[0], p_window, p_renderer, viewport, 326, 585);
         render_lines(&player_board[0], p_window, p_renderer, viewport, 323, 675);
     }
     else {
-        render_score(&player_board[0], p_window, p_renderer, viewport, -540, 270);
-        render_level(&player_board[0], p_window, p_renderer, viewport, -540, -30);
+        render_score(&player_board[0], p_window, p_renderer, viewport, 290, 510);
+        render_level(&player_board[0], p_window, p_renderer, viewport, 290, 605);
         render_lines(&player_board[0], p_window, p_renderer, viewport, 285, 688);
-        render_score(&player_board[1], p_window, p_renderer, viewport, -110, 270);
-        render_level(&player_board[1], p_window, p_renderer, viewport, -110, -30);
+        render_score(&player_board[1], p_window, p_renderer, viewport, 720, 510);
+        render_level(&player_board[1], p_window, p_renderer, viewport, 720, 605);
         render_lines(&player_board[1], p_window, p_renderer, viewport, 710, 688);
     }
 

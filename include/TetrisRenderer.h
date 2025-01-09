@@ -1,6 +1,6 @@
 #pragma once
 #include "TetrisLogic.h"
-#include <SDL.h>
+#include <SDL2/SDL.h>
 
 extern void render_tetris_grid(int tetris_grid[BOARD_HEIGHT][BOARD_WIDTH], int piece_size, SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_Rect viewport, int offset_x, int offset_y);
 extern void render_score(TetrisBoard *p_tetris_board, SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_Rect viewport, int offset_x, int offset_y);

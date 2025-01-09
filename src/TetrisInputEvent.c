@@ -1,13 +1,7 @@
 #include "TetrisInputEvent.h"
 #include "SceneHandler.h"
 #include "TetrisLogic.h"
-#include "TetrisTime.h"
-#include "TetrisUtils.h"
-#include <SDL_events.h>
-#include <SDL.h>
-#include <SDL_keyboard.h>
-#include <SDL_keycode.h>
-#include <SDL_timer.h>
+#include <SDL2/SDL_events.h>
 
 extern bool is_running;
 void (*handle_event)(TetrisBoard[2], SDL_Event *);
