@@ -23,6 +23,7 @@ set(PROJECT_SOURCE_FILES
     src/ResourceRegistry.c
     src/TetrisLogic.c
     src/TetrisRenderer.c
+    src/TetrisSounds.c
 
     src/scene/SceneHandler.c
     src/scene/MainMenuScene.c
@@ -30,6 +31,8 @@ set(PROJECT_SOURCE_FILES
     src/scene/GameOverScene.c
     src/scene/OnePlayerScene.c
     src/scene/TwoPlayerScene.c
+
+    src/event/EventListener.c
 )
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON) # Fixes includes path
@@ -56,3 +59,4 @@ target_link_libraries(${PROJECT_NAME}
 # Includes
 target_include_directories(${PROJECT_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/include)
 target_include_directories(${PROJECT_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/include/scene)
+target_include_directories(${PROJECT_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/include/event)

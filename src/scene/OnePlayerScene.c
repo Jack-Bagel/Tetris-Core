@@ -1,12 +1,16 @@
 #include "OnePlayerScene.h"
+#include "ResourceRegistry.h"
 #include "SceneHandler.h"
 #include "TetrisLogic.h"
 #include "TetrisRenderer.h"
 #include <SDL2/SDL_timer.h>
 
-extern SDL_Texture *g_one_player_bkg;
+#define INPUT_LAG 30
+#define WAITING_LAG 150
+
 extern void (*handle_event)(TetrisBoard[2], SDL_Event *);
 
+// This is probably a bad way to handle inputs delay
 static bool pressed_left = false;
 static bool pressed_right = false;
 static bool pressed_rotate_clock = false;
@@ -14,14 +18,17 @@ static bool pressed_rotate_counter = false;
 static unsigned int first_elapsed_time[4] = {0, 0, 0, 0};
 static unsigned int elapsed_time[4] = {0, 0, 0, 0};
 
-#define INPUT_LAG 30
-#define WAITING_LAG 150
+static void update_playable(SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_Rect viewport, TetrisBoard p_player_one_board[2]);
+static void render_playable(SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_Rect viewport, TetrisBoard p_player_one_board[2]);
+static void movements(TetrisBoard p_tetris_board[2]);
+static void events(TetrisBoard p_tetris_board[2], SDL_Event *event);
+
 
 void init_one_player(PlayableScene *p_scene) {
     p_scene->update = &update_playable;
 }
 
-void update_playable(SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_Rect viewport, TetrisBoard player_board[2]) {
+static void update_playable(SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_Rect viewport, TetrisBoard player_board[2]) {
     tetris_loop(player_board);
     render_playable(p_window, p_renderer, viewport, player_board);
     movements(player_board);
@@ -32,13 +39,13 @@ void update_playable(SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_R
     }
 }
 
-void render_playable(SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_Rect viewport, TetrisBoard player_board[2]) {
+static void render_playable(SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_Rect viewport, TetrisBoard player_board[2]) {
     int piece_size = 32.0; // Size of tetris blocks, move to rendering
     int next_piece_size = 29.0; // Size of tetris blocks, move to rendering
 
     clear_screen(p_renderer);
     render_tetris_grid(player_board[0].m_tetris_grid.grid, piece_size, p_window, p_renderer, viewport, 317, 90);
-    render_background(g_one_player_bkg ,p_window, p_renderer, viewport);
+    render_background(resource_instance()->s_one_player_bkg ,p_window, p_renderer, viewport);
 
     render_score(&player_board[0], p_window, p_renderer, viewport, 830, 240);
     render_level(&player_board[0], p_window, p_renderer, viewport, 830, 635);
@@ -47,7 +54,7 @@ void render_playable(SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_R
     draw_screen(p_renderer, viewport);
 }
 
-void movements(TetrisBoard p_tetris_board[2]) {
+static void movements(TetrisBoard p_tetris_board[2]) {
     // Move left
     if (pressed_left && elapsed_time[0] == 0) {
         first_elapsed_time[0] = SDL_GetTicks();
@@ -97,7 +104,7 @@ void movements(TetrisBoard p_tetris_board[2]) {
     }
 }
 
-void events(TetrisBoard p_tetris_board[2], SDL_Event *event) {
+static void events(TetrisBoard p_tetris_board[2], SDL_Event *event) {
 
     switch (event->type) {
         case SDL_KEYDOWN:

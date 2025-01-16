@@ -1,18 +1,12 @@
 #include "Button.h"
 #include "PauseMenuScene.h"
-
 #include <SDL2/SDL_mixer.h>
-
+#include "ResourceRegistry.h"
 #include "SceneHandler.h"
 #include "TetrisLogic.h"
-#include "TetrisRenderer.h"
 #include "TetrisUtils.h"
 #include <SDL2/SDL_ttf.h>
 
-extern TTF_Font *g_font;
-extern SDL_Texture *g_pause_menu_bkg;
-extern Mix_Chunk *g_next_button_sound;
-extern Mix_Chunk *g_click_button_sound;
 extern bool is_running;
 extern void (*handle_event)(TetrisBoard[2], SDL_Event *);
 
@@ -22,23 +16,28 @@ static Button return_menu = {.x = 760, .y = 470, .text = "Menu"};
 static SDL_Color text_color = {255, 255, 255};
 static unsigned int button_selection = 0;
 
+//Forward Declaration
+static void update_menu(SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_Rect viewport);
+static void render_menu(SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_Rect viewport);
+static void render_pause_background(SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_Rect viewport);
+static void events(TetrisBoard p_tetris_board[2], SDL_Event *event);
 
 void init_pause_menu(MenuScene *scene) {
     scene->update = &update_menu;
 }
 
-void update_menu(SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_Rect viewport) {
+static void update_menu(SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_Rect viewport) {
     render_menu(p_window, p_renderer, viewport);
     handle_event = &events; // Shouldn't run every loop
 }
 
-void render_menu(SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_Rect viewport) {
+static void render_menu(SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_Rect viewport) {
     render_pause_background(p_window, p_renderer, viewport);
 
     Button buttons[3] = {continue_game, restart_game, return_menu};
 
     for (int i=0; i < sizeof(buttons) / sizeof(buttons[0]); i++) {
-        SDL_Surface* surface_message = TTF_RenderText_Solid(g_font, buttons[i].text, text_color); 
+        SDL_Surface* surface_message = TTF_RenderText_Solid(resource_instance()->s_font, buttons[i].text, text_color); 
         SDL_Texture* texture_message = SDL_CreateTextureFromSurface(p_renderer, surface_message);
         int tex_w = surface_message->w;
         int tex_h = surface_message->h;
@@ -60,21 +59,18 @@ void render_menu(SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_Rect 
     SDL_RenderPresent(p_renderer);
 }
 
-void render_pause_background(SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_Rect viewport) {
-    // SDL_SetRenderDrawColor(p_renderer, 0, 0, 0, 0);
-    // SDL_RenderClear(p_renderer);
+static void render_pause_background(SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_Rect viewport) {
     const SDL_Rect background = {.x = (viewport.w / 4), .y = viewport.h / 2, .w = 600, .h = 86};
-    // SDL_RenderSetLogicalSize(p_renderer, viewport.w, viewport.h);
-    SDL_RenderCopy(p_renderer, g_pause_menu_bkg, NULL, &background);
+    SDL_RenderCopy(p_renderer,resource_instance()->s_pause_menu_bkg, NULL, &background);
 }
 
-void events(TetrisBoard p_tetris_board[2], SDL_Event *event) {
+static void events(TetrisBoard p_tetris_board[2], SDL_Event *event) {
         switch (event->type) {
             case SDL_KEYDOWN:
             switch (event->key.keysym.sym) {
 
                 case SDLK_ESCAPE:
-                    Mix_PlayChannel( -1, g_click_button_sound, 0);
+                    call_event(NULL, CLICK_BUTTON_EVENT);
 
                     // One Player Scene
                     if (get_last_scene() == ONE_PLAYER) {
@@ -91,18 +87,16 @@ void events(TetrisBoard p_tetris_board[2], SDL_Event *event) {
 
                 case SDLK_LEFT:
                 case SDLK_a:
-                    decrease_button_selection();
-                    Mix_PlayChannel( -1, g_next_button_sound, 0);
+                    decrease_button_selection(&button_selection, 3);
                 break;
 
                 case SDLK_RIGHT:
                 case SDLK_d:
-                    increase_button_selection();
-                    Mix_PlayChannel( -1, g_next_button_sound, 0);
+                    increase_button_selection(&button_selection, 3);
                 break;
 
                 case SDLK_RETURN:
-                    Mix_PlayChannel( -1, g_click_button_sound, 0);
+                    Mix_PlayChannel( -1, resource_instance()->s_click_button_sound, 0);
 
                     switch (button_selection) {
                         // Continue Game
@@ -164,24 +158,5 @@ void events(TetrisBoard p_tetris_board[2], SDL_Event *event) {
                 break;
             }
         break;
-    }
-}
-
-void increase_button_selection() {
-    if (button_selection == 2) {
-        button_selection = 0;
-    }
-
-    else {
-        button_selection++;
-    }
-}
-void decrease_button_selection() {
-    if (button_selection == 0) {
-        button_selection = 2;
-    }
-
-    else {
-        button_selection--;
     }
 }

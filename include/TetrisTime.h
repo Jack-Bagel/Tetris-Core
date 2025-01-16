@@ -16,12 +16,11 @@ typedef struct TetrisCounter {
 
 } TetrisCounter;
 
-
-extern void init_tetris_time(TetrisCounter *p_tetris_counter);
-extern void accelerate_piece(TetrisCounter *p_tetris_counter);
-extern void reset_piece_acceleration(TetrisCounter *p_tetris_counter);
-extern void reset_tetris_counter(TetrisCounter *p_tetris_counter);
-extern int get_tetris_counter(TetrisCounter *p_tetris_counter);
-extern void update_tick_interval(TetrisCounter *p_tetris_counter, int ticks);
-extern void pause_tetris_counter(TetrisCounter *p_tetris_counter);
-extern void unpause_tetris_counter(TetrisCounter *p_tetris_counter);
+extern void init_tetris_time(TetrisCounter *self);
+extern void accelerate_piece(TetrisCounter *self);
+extern void reset_piece_acceleration(TetrisCounter *self);
+extern void reset_tetris_counter(TetrisCounter *self);
+extern int get_tetris_counter(TetrisCounter *self);
+extern void update_tick_interval(TetrisCounter *self, int ticks);
+extern void pause_tetris_counter(TetrisCounter *self);
+extern void unpause_tetris_counter(TetrisCounter *self);

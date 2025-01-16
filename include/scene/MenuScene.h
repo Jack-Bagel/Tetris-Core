@@ -4,5 +4,5 @@
 
 typedef struct MenuScene {
     void (*update)(SDL_Window*, SDL_Renderer*, const SDL_Rect);
-    
+
 } MenuScene;

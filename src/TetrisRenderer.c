@@ -1,4 +1,5 @@
 #include "TetrisRenderer.h"
+#include "ResourceRegistry.h"
 #include "TetrisLogic.h"
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_image.h>
@@ -8,8 +9,10 @@
 #include <string.h>
 #include <time.h>
 
-extern SDL_Texture *g_block_tex;
-extern TTF_Font *g_font;
+// Forward declaration
+static void render_block(SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_Rect viewport, int *position, int* color, int size);
+static int* index_to_position(int index_i, int index_j, int size, SDL_Window *p_window, int offset_x, int offset_y);
+static int* index_to_position_next_piece(int index_i, int index_j, int size, SDL_Window *p_window, int offset_x, int offset_y);
 
 void render_tetris_grid(int tetris_grid[BOARD_HEIGHT][BOARD_WIDTH], int piece_size, SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_Rect viewport, int offset_x, int offset_y) {
     int *color_value; // Array of 3 elements
@@ -29,25 +32,8 @@ void render_tetris_grid(int tetris_grid[BOARD_HEIGHT][BOARD_WIDTH], int piece_si
 
 }
 
-void render_block(SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_Rect viewport, int *position, int *color, int size) {
-    const SDL_Rect block = {.x = position[1], .y = position[0], .w = size, .h = size};
-    SDL_RenderCopy(p_renderer, g_block_tex, NULL, &block);
-    SDL_SetTextureColorMod(g_block_tex, color[0], color[1], color[2]);
-    free(position); // I may need to free both pointers, idk if it is done automatically
-}
-
-int* index_to_position(int index_i, int index_j, int size, SDL_Window *p_window, int offset_x, int offset_y) {
-    int *position = malloc(sizeof(int) * 2); // Free in render_tetris_grid()
-
-    position[1] = index_j*size + offset_x;
-    position[0] = index_i*size + offset_y;
-
-    return position;
-}
-
 
 /** UI **/
-
 void render_background(SDL_Texture *background_texture, SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_Rect viewport) {
     const SDL_Rect background = {.x = 0, .y = 0, .w = viewport.w, .h = viewport.h};
     // SDL_RenderSetLogicalSize(p_renderer, viewport.w, viewport.h);
@@ -62,7 +48,7 @@ void render_score(TetrisBoard *p_tetris_board, SDL_Window *p_window, SDL_Rendere
     char level_str[] = "";
     strcat(level_str, temp_str);
 
-    SDL_Surface* surface_message = TTF_RenderText_Solid(g_font, level_str, text_color); 
+    SDL_Surface* surface_message = TTF_RenderText_Solid(resource_instance()->s_font, level_str, text_color); 
     SDL_Texture* texture_message = SDL_CreateTextureFromSurface(p_renderer, surface_message);
     int tex_w = surface_message->w;
     int tex_h = surface_message->h;
@@ -82,7 +68,7 @@ void render_level(TetrisBoard *p_tetris_board, SDL_Window *p_window, SDL_Rendere
     char level_str[] = "";
     strcat(level_str, temp_str);
 
-    SDL_Surface* surface_message = TTF_RenderText_Solid(g_font, level_str, text_color); 
+    SDL_Surface* surface_message = TTF_RenderText_Solid(resource_instance()->s_font, level_str, text_color); 
     SDL_Texture* texture_message = SDL_CreateTextureFromSurface(p_renderer, surface_message);
     int tex_w = surface_message->w;
     int tex_h = surface_message->h;
@@ -101,7 +87,7 @@ void render_lines(TetrisBoard *p_tetris_board, SDL_Window *p_window, SDL_Rendere
     char level_str[] = "";
     strcat(level_str, temp_str);
 
-    SDL_Surface* surface_message = TTF_RenderText_Solid(g_font, level_str, text_color);
+    SDL_Surface* surface_message = TTF_RenderText_Solid(resource_instance()->s_font, level_str, text_color);
     SDL_Texture* texture_message = SDL_CreateTextureFromSurface(p_renderer, surface_message);
     int tex_w = surface_message->w;
     int tex_h = surface_message->h;
@@ -132,7 +118,23 @@ void render_next_piece(Piece next_piece, int piece_size, SDL_Window *p_window, S
     }
 }
 
-int* index_to_position_next_piece(int index_i, int index_j, int size, SDL_Window *p_window, int offset_x, int offset_y) {
+static void render_block(SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_Rect viewport, int *position, int *color, int size) {
+    const SDL_Rect block = {.x = position[1], .y = position[0], .w = size, .h = size};
+    SDL_RenderCopy(p_renderer, resource_instance()->s_block_tex, NULL, &block);
+    SDL_SetTextureColorMod(resource_instance()->s_block_tex, color[0], color[1], color[2]);
+    free(position); // I may need to free both pointers, idk if it is done automatically
+}
+
+static int* index_to_position(int index_i, int index_j, int size, SDL_Window *p_window, int offset_x, int offset_y) {
+    int *position = malloc(sizeof(int) * 2); // Free in render_tetris_grid()
+
+    position[1] = index_j*size + offset_x;
+    position[0] = index_i*size + offset_y;
+
+    return position;
+}
+
+static int* index_to_position_next_piece(int index_i, int index_j, int size, SDL_Window *p_window, int offset_x, int offset_y) {
     int *position = malloc(sizeof(int) * 2); // Free in render_tetris_grid()
 
     position[1] = index_j*size + offset_x;

@@ -1,5 +1,4 @@
 #include "TetrisInputEvent.h"
-#include "SceneHandler.h"
 #include "TetrisLogic.h"
 #include <SDL2/SDL_events.h>
 

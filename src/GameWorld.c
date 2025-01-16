@@ -4,13 +4,22 @@
 #include <SDL2/SDL_mixer.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include "EventListener.h"
 #include "SceneHandler.h"
 #include "TetrisInputEvent.h"
 #include "TetrisUtils.h"
 #include "ResourceRegistry.h"
+#include "TetrisSounds.h"
 #include "GameWorld.h"
 
+// Global space
 bool is_running = true;
+
+// Setup main application
+static SDL_Window *p_window;
+static SDL_Renderer *p_renderer;
+static TetrisBoard s_players_board[2];
+static const SDL_Rect m_viewport = {.x = 0, .y = 0, .w = SCREEN_WIDTH, .h = SCREEN_HEIGHT};
 
 bool initialize_game_world() {
 
@@ -36,13 +45,12 @@ bool initialize_game_world() {
     // Initialization
     p_window = SDL_CreateWindow("Tetris 95", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
     p_renderer = SDL_CreateRenderer(p_window, -1, SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED);
-    register_resources(p_renderer);
+    register_resources(p_renderer, resource_instance());
     init_scene();
+    init_listeners();
+    init_music();
     reset_game_seed();
 
-
-    Mix_VolumeMusic(15);
-    Mix_Volume(-1, 12);
     if(p_window == NULL) {
         printf("Failed to create window\n");
         return -1;

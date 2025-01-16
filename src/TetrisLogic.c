@@ -1,4 +1,5 @@
 #include "TetrisLogic.h"
+#include "EventListener.h"
 #include "TetrisUtils.h"
 #include "Pieces.h"
 #include "TetrisTime.h"
@@ -7,56 +8,30 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
-
-extern Mix_Chunk *g_movement_sound;
-extern Mix_Chunk *g_rotate_sound;
-extern Mix_Chunk *g_touch_ground_sound;
-extern Mix_Chunk *g_line_clear_sound;
-extern Mix_Chunk *g_four_lines_clear_sound;
-extern Mix_Music *g_tetris_theme_music;
+#include <time.h>
 
 
-bool init_tetris_board(TetrisBoard *self) {
+static unsigned int s_game_seed;
 
-    // Init grids
-    const int empty_grid[BOARD_HEIGHT][BOARD_WIDTH] = {0};
-    memcpy(self->m_tetris_grid.grid, empty_grid, sizeof(int) * BOARD_HEIGHT * BOARD_WIDTH);
-    init_tetris_edges(self);
-    memcpy(self->m_last_tetris_grid.grid, self->m_tetris_grid.grid, sizeof(int) * BOARD_HEIGHT * BOARD_WIDTH);
-    memcpy(self->m_falling_piece_grid.grid, empty_grid, sizeof(int) * BOARD_HEIGHT * BOARD_WIDTH);
+// Forward declaration
+static bool init_tetris_board(TetrisBoard *self);
+static void init_tetris_edges(TetrisBoard *self);
 
-    // init member variables
-    init_tetris_time(&self->m_counter);
-    self->m_game_start = false;
-    self->m_is_game_over = false;
-    self->m_offset = 6;
-    self->m_points = 0;
-    self->m_lines_cleared = 0;
-    self->m_total_lines_cleared = 0;
-    self->m_current_level = 0;
-    self->m_increment_seed = 0;
+static void generate_new_piece(TetrisBoard *self);
+static void make_piece_fall(TetrisBoard *self, int height_offset);
+static bool piece_collides(TetrisGrid *p_last_tetris_grid, TetrisGrid *p_falling_piece_grid);
+static void clear_lines(TetrisBoard *self);
+static void clear_line(TetrisBoard *self, int line);
+static void game_over(TetrisBoard *self);
+static void update_level(TetrisBoard *self);
+static void update_speed(TetrisBoard *self);
 
-    //TODO: Move this inside a sound/music manager
-    if ( Mix_PlayMusic(g_tetris_theme_music, -1) != 0 ) {
-        printf("Failed to play music: %s\n", Mix_GetError());
-    }
+// Merge these functions with their actions
+static bool can_rotate_clockwise(TetrisBoard *self);
+static bool can_rotate_counter_clockwise(TetrisBoard *self);
+static bool can_move_left(TetrisBoard *self);
+static bool can_move_right(TetrisBoard *self);
 
-    return true; // If everything initialized properly (TODO: add a check)
-}
-
-void init_tetris_edges(TetrisBoard *self) {
-
-    for (int i = 0; i < BOARD_HEIGHT; i++) {
-        self->m_tetris_grid.grid[i][0] = GREY;
-        self->m_tetris_grid.grid[i][1] = GREY;
-        self->m_tetris_grid.grid[i][BOARD_WIDTH - 1] = GREY;
-        self->m_tetris_grid.grid[i][BOARD_WIDTH - 2] = GREY;
-    }
-
-    for (int j = 0; j < BOARD_WIDTH; j++) {
-        self->m_tetris_grid.grid[BOARD_HEIGHT - 1][j] = GREY;
-    }
-}
 
 Piece get_next_piece(TetrisBoard *self) {
     return self->m_next_piece;
@@ -76,6 +51,44 @@ int get_total_lines(TetrisBoard *self) {
 
 bool get_game_over(TetrisBoard *self) {
     return self->m_is_game_over;
+}
+
+
+static bool init_tetris_board(TetrisBoard *self) {
+
+    // Init grids
+    const int empty_grid[BOARD_HEIGHT][BOARD_WIDTH] = {0};
+    memcpy(self->m_tetris_grid.grid, empty_grid, sizeof(int) * BOARD_HEIGHT * BOARD_WIDTH);
+    init_tetris_edges(self);
+    memcpy(self->m_last_tetris_grid.grid, self->m_tetris_grid.grid, sizeof(int) * BOARD_HEIGHT * BOARD_WIDTH);
+    memcpy(self->m_falling_piece_grid.grid, empty_grid, sizeof(int) * BOARD_HEIGHT * BOARD_WIDTH);
+
+    // init member variables
+    init_tetris_time(&self->m_counter);
+    self->m_game_start = false;
+    self->m_is_game_over = false;
+    self->m_offset = 6;
+    self->m_points = 0;
+    self->m_lines_cleared = 0;
+    self->m_total_lines_cleared = 0;
+    self->m_current_level = 0;
+    self->m_increment_seed = 0;
+
+    return true; // If everything initialized properly (TODO: add a check)
+}
+
+static void init_tetris_edges(TetrisBoard *self) {
+
+    for (int i = 0; i < BOARD_HEIGHT; i++) {
+        self->m_tetris_grid.grid[i][0] = GREY;
+        self->m_tetris_grid.grid[i][1] = GREY;
+        self->m_tetris_grid.grid[i][BOARD_WIDTH - 1] = GREY;
+        self->m_tetris_grid.grid[i][BOARD_WIDTH - 2] = GREY;
+    }
+
+    for (int j = 0; j < BOARD_WIDTH; j++) {
+        self->m_tetris_grid.grid[BOARD_HEIGHT - 1][j] = GREY;
+    }
 }
 
 /** GAME LOGIC **/
@@ -98,8 +111,8 @@ void tetris_loop(TetrisBoard *self) {
         make_piece_fall(self, 0);
 
         if (piece_collides(&self->m_last_tetris_grid, &self->m_falling_piece_grid)) {
-            // Play sound
-            Mix_PlayChannel(-1, g_touch_ground_sound, 0);
+            
+            call_event(NULL, COLLISION_EVENT);
 
             // Place the block one step behind the collision
             make_piece_fall(self, -1);
@@ -132,7 +145,7 @@ void tetris_loop(TetrisBoard *self) {
     }
 }
 
-bool piece_collides(TetrisGrid *p_last_tetris_grid, TetrisGrid *p_falling_piece_grid) {
+static bool piece_collides(TetrisGrid *p_last_tetris_grid, TetrisGrid *p_falling_piece_grid) {
     
     // Piece touches ground
     for (int j = 0; j < BOARD_WIDTH; j++) {
@@ -147,6 +160,7 @@ bool piece_collides(TetrisGrid *p_last_tetris_grid, TetrisGrid *p_falling_piece_
     for (int i = 0; i < BOARD_HEIGHT; i++) {
         for (int j = 0; j < BOARD_WIDTH; j++) {
             if (temp_grid.grid[i][j] != 0 && temp_grid.grid[i][j] % 2 == 0) {
+
                 return true;
             }
         }
@@ -155,7 +169,7 @@ bool piece_collides(TetrisGrid *p_last_tetris_grid, TetrisGrid *p_falling_piece_
     return false;
 }
 
-void make_piece_fall(TetrisBoard *self, int height_offset) {
+static void make_piece_fall(TetrisBoard *self, int height_offset) {
     int height = get_tetris_counter(&self->m_counter) + height_offset;
     TetrisGrid temp_grid = {.grid = {0}};
     clear_tetris_grid(&self->m_falling_piece_grid);
@@ -182,7 +196,7 @@ void make_piece_fall(TetrisBoard *self, int height_offset) {
     }
 }
 
-void game_over(TetrisBoard *self) {
+static void game_over(TetrisBoard *self) {
     for (int j=2; j < BOARD_WIDTH - 2; j++) {
         if (self->m_last_tetris_grid.grid[2][j] != 0 && !self->m_is_game_over) {
             self->m_is_game_over = true;
@@ -191,7 +205,7 @@ void game_over(TetrisBoard *self) {
     }
 }
 
-void clear_lines(TetrisBoard *self) {
+static void clear_lines(TetrisBoard *self) {
     unsigned int line_count = 0;
     bool full_line = true;
 
@@ -217,29 +231,25 @@ void clear_lines(TetrisBoard *self) {
         self->m_points += 40 * (self->m_current_level + 1);
         self->m_lines_cleared += 1;
         self->m_total_lines_cleared += 1;
-        Mix_PlayChannel( -1, g_line_clear_sound, 0);
-        printf("ONE LINE CLEARED\n");
+        call_event(&line_count, CLEAR_LINE_EVENT);
     }
     else if (line_count == 2) {
         self->m_points += 100 * (self->m_current_level + 1);
         self->m_lines_cleared += 2;
         self->m_total_lines_cleared += 2;
-        Mix_PlayChannel( -1, g_line_clear_sound, 0);
-        printf("TWO LINE CLEARED\n");
+        call_event(&line_count, CLEAR_LINE_EVENT);
     }
     else if (line_count == 3) {
         self->m_points += 300 * (self->m_current_level + 1);
         self->m_lines_cleared += 3;
         self->m_total_lines_cleared += 3;
-        Mix_PlayChannel( -1, g_line_clear_sound, 0);
-        printf("THREE LINE CLEARED\n");
+        call_event(&line_count, CLEAR_LINE_EVENT);
     }
     else if (line_count == 4) {
         self->m_points += 1200 * (self->m_current_level + 1);
         self->m_lines_cleared += 4;
         self->m_total_lines_cleared += 4;
-        Mix_PlayChannel( -1, g_four_lines_clear_sound, 0);
-        printf("TETRIS\n");
+        call_event(&line_count, CLEAR_LINE_EVENT);
     }
 
     if (line_count > 0) {
@@ -248,7 +258,7 @@ void clear_lines(TetrisBoard *self) {
 
 }
 
-void clear_line(TetrisBoard *self, int line) {
+static void clear_line(TetrisBoard *self, int line) {
     for (int j=2; j < BOARD_WIDTH - 2; j++) {
         self->m_tetris_grid.grid[line][j] = 0;
     }
@@ -261,7 +271,7 @@ void clear_line(TetrisBoard *self, int line) {
     }
 }
 
-void generate_new_piece(TetrisBoard *self) { 
+static void generate_new_piece(TetrisBoard *self) { 
 
     srand(self->m_seed + self->m_increment_seed);
     int random_piece = random_to_piece(rand() % 7 + 1);
@@ -290,8 +300,17 @@ void generate_new_piece(TetrisBoard *self) {
     self->m_increment_seed++;
 }
 
+
+void reset_game_seed() {
+    s_game_seed = time(NULL);
+}
+
+unsigned int get_game_seed() {
+    return s_game_seed;
+}
+
 /** LEVELING AND SPEED **/
-void update_level(TetrisBoard *self) {
+static void update_level(TetrisBoard *self) {
     if (self->m_current_level >= 0) {
         // if (m_lines_cleared >= (m_current_level * 10 + 10)) {
         if (self->m_lines_cleared >= 10) {
@@ -304,7 +323,7 @@ void update_level(TetrisBoard *self) {
     }
 }
 
-void update_speed(TetrisBoard *self) {
+static void update_speed(TetrisBoard *self) {
     if (self->m_current_level >= 0 && self->m_current_level <= 10) {
         update_tick_interval(&self->m_counter, 20);
     }
@@ -331,31 +350,35 @@ void update_speed(TetrisBoard *self) {
 void rotate_piece_clockwise(TetrisBoard *self) {
     if (can_rotate_clockwise(self)) {
         rotate_clockwise(&self->m_piece);
-        Mix_PlayChannel( -1, g_rotate_sound, 0);
+
+        call_event(&self->m_piece, ROTATE_PIECE_EVENT);
     }
 }
 
 void rotate_piece_counter_clockwise(TetrisBoard *self) {
     if (can_rotate_counter_clockwise(self)) {
         rotate_counter_clockwise(&self->m_piece);
-        Mix_PlayChannel( -1, g_rotate_sound, 0);
+
+        call_event(&self->m_piece, ROTATE_PIECE_EVENT);
     }
 }
 
 void move_left(TetrisBoard *self) {
     if (can_move_left(self)) {
         self->m_offset--;
-        Mix_PlayChannel( -1, g_movement_sound, 0 );
+
+        call_event(&self->m_piece, MOVE_PIECE_EVENT);
     }
 }
 void move_right(TetrisBoard *self) {
     if (can_move_right(self)) {
         self->m_offset++;
-        Mix_PlayChannel( -1, g_movement_sound, 0 );
+
+        call_event(&self->m_piece, MOVE_PIECE_EVENT);
     }
 }
 // Move all the bool functions directly inside the movement functions
-bool can_move_left(TetrisBoard *self) {
+static bool can_move_left(TetrisBoard *self) {
     TetrisGrid temp_grid = {.grid = {0}};
     for (int i = 0; i < BOARD_HEIGHT; i++) {
         for (int j = 0; j < BOARD_WIDTH; j++) {
@@ -369,7 +392,7 @@ bool can_move_left(TetrisBoard *self) {
 
     return true;
 }
-bool can_move_right(TetrisBoard *self) {
+static bool can_move_right(TetrisBoard *self) {
     TetrisGrid temp_grid = {.grid = {0}};
     for (int i = 0; i < BOARD_HEIGHT; i++) {
         for (int j = 0; j < BOARD_WIDTH; j++) {
@@ -385,7 +408,7 @@ bool can_move_right(TetrisBoard *self) {
 }
 
 
-bool can_rotate_clockwise(TetrisBoard *self) {
+static bool can_rotate_clockwise(TetrisBoard *self) {
     TetrisGrid temp_grid = {.grid = {0}};
     TetrisGrid temp_falling_piece_grid = {.grid = {0}};
     Piece temp_piece = self->m_piece;
@@ -421,7 +444,7 @@ bool can_rotate_clockwise(TetrisBoard *self) {
     return true;
 }
 
-bool can_rotate_counter_clockwise(TetrisBoard *self) {
+static bool can_rotate_counter_clockwise(TetrisBoard *self) {
     TetrisGrid temp_grid = {.grid = {0}};
     TetrisGrid temp_falling_piece_grid = {.grid = {0}};
     Piece temp_piece = self->m_piece;

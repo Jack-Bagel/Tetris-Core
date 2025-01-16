@@ -1,9 +1,12 @@
 #include "TwoPlayerScene.h"
+#include "ResourceRegistry.h"
 #include "SceneHandler.h"
 #include "TetrisLogic.h"
 #include "TetrisRenderer.h"
 
-extern SDL_Texture *g_two_player_bkg;
+#define INPUT_LAG 30
+#define WAITING_LAG 150
+
 extern void (*handle_event)(TetrisBoard[2], SDL_Event *);
 
 // Player 1
@@ -22,14 +25,18 @@ static bool pressed_rotate_counter_two = false;
 static unsigned int first_elapsed_time_two[4] = {0, 0, 0, 0};
 static unsigned int elapsed_time_two[4] = {0, 0, 0, 0};
 
-#define INPUT_LAG 30
-#define WAITING_LAG 150
+// Forward declaration
+static void update_playable(SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_Rect viewport, TetrisBoard *p_player_board);
+static void render_playable(SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_Rect viewport, TetrisBoard *p_player_board);
+static void movements(TetrisBoard p_tetris_board[2]);
+static void events(TetrisBoard p_tetris_board[2], SDL_Event *event);
+
 
 void init_two_player(PlayableScene *scene) {
     scene->update = &update_playable;
 }
 
-void update_playable(SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_Rect viewport, TetrisBoard player_board[2]) {
+static void update_playable(SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_Rect viewport, TetrisBoard player_board[2]) {
     tetris_loop(&player_board[0]);
     tetris_loop(&player_board[1]);
     movements(player_board);
@@ -41,7 +48,7 @@ void update_playable(SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_R
     }
 }
 
-void render_playable(SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_Rect viewport, TetrisBoard players_board[2]) {
+static void render_playable(SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_Rect viewport, TetrisBoard players_board[2]) {
     int piece_size = 32.0; // Size of tetris blocks, move to rendering
     int next_piece_size = 29.0; // Size of tetris blocks, move to rendering
 
@@ -52,7 +59,7 @@ void render_playable(SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_R
     // Render grids behind background
     render_tetris_grid(players_board[0].m_tetris_grid.grid, piece_size, p_window, p_renderer, viewport, -19, 105);
     render_tetris_grid(players_board[1].m_tetris_grid.grid, piece_size, p_window, p_renderer, viewport, + 595, 105);
-    render_background(g_two_player_bkg ,p_window, p_renderer, viewport);
+    render_background(resource_instance()->s_two_player_bkg ,p_window, p_renderer, viewport);
 
     // Render UI on top
 
@@ -71,7 +78,7 @@ void render_playable(SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_R
     draw_screen(p_renderer, viewport);
 }
 
-void movements(TetrisBoard p_tetris_board[2]) {
+static void movements(TetrisBoard p_tetris_board[2]) {
     //Playe One
 
     // Move left
@@ -173,7 +180,7 @@ void movements(TetrisBoard p_tetris_board[2]) {
     }
 }
 
-void events(TetrisBoard p_tetris_board[2], SDL_Event *event) {
+static void events(TetrisBoard p_tetris_board[2], SDL_Event *event) {
     switch (event->type) {
         case SDL_KEYDOWN:
             switch (event->key.keysym.sym) {

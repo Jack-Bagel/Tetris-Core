@@ -1,19 +1,12 @@
 #include "Button.h"
 #include "GameOverScene.h"
-
 #include <SDL2/SDL_mixer.h>
-
+#include "ResourceRegistry.h"
 #include "SceneHandler.h"
 #include "TetrisLogic.h"
 #include "TetrisRenderer.h"
 #include "TetrisUtils.h"
 #include <SDL2/SDL_ttf.h>
-
-extern TTF_Font *g_font;
-extern SDL_Texture *g_game_over_bkg;
-extern SDL_Texture *g_two_player_game_over_bkg;
-extern Mix_Chunk *g_next_button_sound;
-extern Mix_Chunk *g_click_button_sound;
 
 extern bool is_running;
 extern void (*handle_event)(TetrisBoard[2], SDL_Event *);
@@ -23,22 +16,27 @@ static Button menu_button = {.x = 700, .y = 250, .text = "Menu"};
 static SDL_Color text_color = {255, 255, 255};
 static unsigned int button_selection = 0;
 
+//Forward Declaration
+static void update_game_over(SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_Rect viewport, TetrisBoard player_board[2]);
+static void render_game_over(SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_Rect viewport, TetrisBoard player_board[2]);
+static void events(TetrisBoard p_tetris_board[2], SDL_Event *event);
+
 void init_game_over(GameOverScene *scene) {
     scene->update = &update_game_over;
 }
 
-void update_game_over(SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_Rect viewport, TetrisBoard player_board[2]) {
+static void update_game_over(SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_Rect viewport, TetrisBoard player_board[2]) {
     render_game_over(p_window, p_renderer, viewport, player_board);
     handle_event = &events; // Shouldn't run every frames
 }
 
-void render_game_over(SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_Rect viewport, TetrisBoard player_board[2]) {
+static void render_game_over(SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_Rect viewport, TetrisBoard player_board[2]) {
     SDL_Texture *background;
     if (get_last_scene() == ONE_PLAYER) {
-        background = g_game_over_bkg;
+        background = resource_instance()->s_game_over_bkg;
     }
     else {
-        background = g_two_player_game_over_bkg;
+        background = resource_instance()->s_two_player_game_over_bkg;
     }
 
     clear_screen(p_renderer);
@@ -62,7 +60,7 @@ void render_game_over(SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_
 
     // Render Buttons
     for (int i=0; i < sizeof(buttons) / sizeof(buttons[0]); i++) {
-        SDL_Surface* surface_message = TTF_RenderText_Solid(g_font, buttons[i].text, text_color);
+        SDL_Surface* surface_message = TTF_RenderText_Solid(resource_instance()->s_font, buttons[i].text, text_color);
         SDL_Texture* texture_message = SDL_CreateTextureFromSurface(p_renderer, surface_message);
         int tex_w = surface_message->w;
         int tex_h = surface_message->h;
@@ -84,25 +82,25 @@ void render_game_over(SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_
     SDL_RenderPresent(p_renderer);
 }
 
-void events(TetrisBoard p_tetris_board[2], SDL_Event *event) {
+static void events(TetrisBoard p_tetris_board[2], SDL_Event *event) {
     switch (event->type) {
         case SDL_KEYDOWN:
         switch (event->key.keysym.sym) {
 
             case SDLK_LEFT:
             case SDLK_a:
-                decrease_button_selection();
-                Mix_PlayChannel( -1, g_next_button_sound, 0);
+                decrease_button_selection(&button_selection, 2);
+                Mix_PlayChannel( -1, resource_instance()->s_next_button_sound, 0);
             break;
 
             case SDLK_RIGHT:
             case SDLK_d:
-                increase_button_selection();
-                Mix_PlayChannel( -1, g_next_button_sound, 0);
+                increase_button_selection(&button_selection, 2);
+                Mix_PlayChannel( -1, resource_instance()->s_next_button_sound, 0);
             break;
 
             case SDLK_RETURN:
-                    Mix_PlayChannel( -1, g_click_button_sound, 0);
+                    call_event(NULL, CLICK_BUTTON_EVENT);
 
                     switch (button_selection) {
                         // Reset Game
@@ -114,7 +112,8 @@ void events(TetrisBoard p_tetris_board[2], SDL_Event *event) {
                                 p_tetris_board[0].m_game_start = false;
                                 reset_game_seed();
                             }
-                            // Two Players
+
+                            // Two Player
                             else if (get_last_scene() == TWO_PLAYER) {
                                 set_current_scene(TWO_PLAYER);
                                 unpause_tetris_counter(&p_tetris_board[0].m_counter);
@@ -134,7 +133,8 @@ void events(TetrisBoard p_tetris_board[2], SDL_Event *event) {
                                 p_tetris_board[0].m_game_start = false;
                                 reset_game_seed();
                             }
-                            // Two Players
+
+                            // Two Player
                             else if (get_last_scene() == TWO_PLAYER) {
                                 set_current_scene(MAIN_MENU);
                                 unpause_tetris_counter(&p_tetris_board[0].m_counter);
@@ -151,21 +151,3 @@ void events(TetrisBoard p_tetris_board[2], SDL_Event *event) {
     }
 }
 
-void increase_button_selection() {
-    if (button_selection == 1) {
-        button_selection = 0;
-    }
-
-    else {
-        button_selection++;
-    }
-}
-void decrease_button_selection() {
-    if (button_selection == 0) {
-        button_selection = 1;
-    }
-
-    else {
-        button_selection--;
-    }
-}

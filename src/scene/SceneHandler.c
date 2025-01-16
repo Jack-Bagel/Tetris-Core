@@ -9,12 +9,10 @@
 #include "TetrisLogic.h"
 #include <SDL2/SDL_rect.h>
 
-extern SDL_Texture *g_one_player_bkg;
-extern SDL_Texture *g_two_player_bkg;
-extern SDL_Texture *g_two_player_bkg;
-extern SDL_Texture *g_start_menu_bkg;
 extern void (*handle_event)(TetrisBoard[2], SDL_Event *);
 
+static unsigned int s_current_scene;
+static unsigned int s_last_scene;
 static MenuScene main_menu;
 static MenuScene pause_menu;
 static GameOverScene game_over_scene;

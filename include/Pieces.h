@@ -75,7 +75,6 @@ typedef struct Piece {
     int tetromino[4][4];
 } Piece;
 
-
 extern Piece create_piece(Tetromino tetromino);
 extern int *get_block_color(PieceColor color);
 extern void rotate_clockwise(Piece *piece);

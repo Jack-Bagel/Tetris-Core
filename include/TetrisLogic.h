@@ -31,14 +31,16 @@ typedef struct TetrisBoard {
 
 } TetrisBoard;
 
+extern void tetris_loop(TetrisBoard *self);
+
+
+extern void reset_game_seed();
+extern unsigned int get_game_seed();
 extern Piece get_next_piece(TetrisBoard *self);
 extern int get_points(TetrisBoard *self);
 extern int get_level(TetrisBoard *self);
 extern int get_total_lines(TetrisBoard *self);
 extern bool get_game_over(TetrisBoard *self);
-
-
-extern void tetris_loop(TetrisBoard *self);
 
 // Controls 
 extern void rotate_piece_clockwise(TetrisBoard *self);
@@ -46,19 +48,3 @@ extern void rotate_piece_counter_clockwise(TetrisBoard *self);
 extern void move_left(TetrisBoard *self);
 extern void move_right(TetrisBoard *self);
 
-// Tetris board loop
-static bool init_tetris_board(TetrisBoard *self);
-static void generate_new_piece(TetrisBoard *self);
-static void make_piece_fall(TetrisBoard *self, int height_offset);
-static bool piece_collides(TetrisGrid *p_last_tetris_grid, TetrisGrid *p_falling_piece_grid);
-static void init_tetris_edges(TetrisBoard *self);
-static void clear_lines(TetrisBoard *self);
-static void clear_line(TetrisBoard *self, int line);
-static void game_over(TetrisBoard *self);
-static bool can_move_left(TetrisBoard *self);
-static bool can_move_right(TetrisBoard *self);
-static bool can_rotate_clockwise(TetrisBoard *self);
-static bool can_rotate_counter_clockwise(TetrisBoard *self);
-
-static void update_level(TetrisBoard *self);
-static void update_speed(TetrisBoard *self);

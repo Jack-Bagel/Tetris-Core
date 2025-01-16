@@ -83,14 +83,6 @@ int random_to_piece(int piece_number) {
     return -1;
 }
 
-void reset_game_seed() {
-    s_game_seed = time(NULL);
-}
-
-unsigned int get_game_seed() {
-    return s_game_seed;
-}
-
 void print_grid(int tetris_grid[BOARD_HEIGHT][BOARD_WIDTH]) {
 
     printf("*****************************");
