@@ -68,8 +68,7 @@ DOWN ACCELERATION -> 'Down-Arrow'
 * Pieces fall at 200m/s with 10m/s acceleration (piece acceleration happens at the same levels that the NES Tetris acceleration happens)
 
 ## Future Features
-* Save Top Score
-* Add Statistics on Falling Pieces
+* Add NES Piece Colors
 * Add Controller Support
 * Add Down Acceleration points
 * Add Multiplayer
