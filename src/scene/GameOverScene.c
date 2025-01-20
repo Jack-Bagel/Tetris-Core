@@ -1,6 +1,7 @@
 #include "Button.h"
 #include "GameOverScene.h"
 #include <SDL2/SDL_mixer.h>
+#include "EventListener.h"
 #include "ResourceRegistry.h"
 #include "SceneHandler.h"
 #include "TetrisLogic.h"
@@ -45,6 +46,7 @@ static void render_game_over(SDL_Window *p_window, SDL_Renderer *p_renderer, con
 
     // Render Stats
     if (get_last_scene() == ONE_PLAYER) {
+        render_top_score(&player_board[0], p_window, p_renderer, viewport, 270, 390);
         render_score(&player_board[0], p_window, p_renderer, viewport, 330, 485);
         render_level(&player_board[0], p_window, p_renderer, viewport, 326, 585);
         render_lines(&player_board[0], p_window, p_renderer, viewport, 323, 675);
@@ -111,6 +113,7 @@ static void events(TetrisBoard p_tetris_board[2], SDL_Event *event) {
                                 unpause_tetris_counter(&p_tetris_board[0].m_counter);
                                 p_tetris_board[0].m_game_start = false;
                                 reset_game_seed();
+                                pub_game_restart_event(NULL);
                             }
 
                             // Two Player
@@ -121,6 +124,7 @@ static void events(TetrisBoard p_tetris_board[2], SDL_Event *event) {
                                 p_tetris_board[0].m_game_start = false;
                                 p_tetris_board[1].m_game_start = false;
                                 reset_game_seed();
+                                pub_game_restart_event(NULL);
                             }
                         break;
 
@@ -132,6 +136,7 @@ static void events(TetrisBoard p_tetris_board[2], SDL_Event *event) {
                                 unpause_tetris_counter(&p_tetris_board[0].m_counter);
                                 p_tetris_board[0].m_game_start = false;
                                 reset_game_seed();
+                                pub_game_restart_event(NULL);
                             }
 
                             // Two Player
@@ -142,6 +147,7 @@ static void events(TetrisBoard p_tetris_board[2], SDL_Event *event) {
                                 p_tetris_board[0].m_game_start = false;
                                 p_tetris_board[1].m_game_start = false;
                                 reset_game_seed();
+                                pub_game_restart_event(NULL);
                             }
                         break;
                     }

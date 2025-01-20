@@ -60,6 +60,26 @@ void render_score(TetrisBoard *p_tetris_board, SDL_Window *p_window, SDL_Rendere
     SDL_DestroyTexture(texture_message);
 }
 
+void render_top_score(TetrisBoard *p_tetris_board, SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_Rect viewport, int offset_x, int offset_y) {
+
+    SDL_Color text_color = {255, 255 ,255};
+    char temp_str[64];
+    sprintf(temp_str, "%d", get_top_score(p_tetris_board)); // move integer inside string
+    char level_str[] = "";
+    strcat(level_str, temp_str);
+
+    SDL_Surface* surface_message = TTF_RenderText_Solid(resource_instance()->s_font, level_str, text_color); 
+    SDL_Texture* texture_message = SDL_CreateTextureFromSurface(p_renderer, surface_message);
+    int tex_w = surface_message->w;
+    int tex_h = surface_message->h;
+
+    const SDL_Rect points_rect = {.x = offset_x, .y = offset_y, .w = tex_w * 1.4f, .h = tex_h * 1.4f};
+    SDL_RenderCopy(p_renderer, texture_message, NULL, &points_rect);
+
+    SDL_FreeSurface(surface_message);
+    SDL_DestroyTexture(texture_message);
+}
+
 void render_level(TetrisBoard *p_tetris_board, SDL_Window *p_window, SDL_Renderer *p_renderer, const SDL_Rect viewport, int offset_x, int offset_y) {
 
     SDL_Color text_color = {255, 255 ,255};

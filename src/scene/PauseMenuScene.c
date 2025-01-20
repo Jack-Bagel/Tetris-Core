@@ -122,6 +122,7 @@ static void events(TetrisBoard p_tetris_board[2], SDL_Event *event) {
                                 unpause_tetris_counter(&p_tetris_board[0].m_counter);
                                 p_tetris_board[0].m_game_start = false;
                                 reset_game_seed();
+                                pub_game_restart_event(NULL);
                             }
                             // Two Players
                             else if (get_last_scene() == TWO_PLAYER) {
@@ -131,6 +132,7 @@ static void events(TetrisBoard p_tetris_board[2], SDL_Event *event) {
                                 p_tetris_board[0].m_game_start = false;
                                 p_tetris_board[1].m_game_start = false;
                                 reset_game_seed();
+                                pub_game_restart_event(NULL);
                             }
 
                         break;
@@ -143,6 +145,7 @@ static void events(TetrisBoard p_tetris_board[2], SDL_Event *event) {
                                 unpause_tetris_counter(&p_tetris_board[0].m_counter);
                                 p_tetris_board[0].m_game_start = false;
                                 reset_game_seed();
+                                pub_game_restart_event(NULL);
                             }
                             // Two Players
                             else if (get_last_scene() == TWO_PLAYER) {
@@ -152,6 +155,7 @@ static void events(TetrisBoard p_tetris_board[2], SDL_Event *event) {
                                 p_tetris_board[0].m_game_start = false;
                                 p_tetris_board[1].m_game_start = false;
                                 reset_game_seed();
+                                pub_game_restart_event(NULL);
                             }
                         break;
                     }

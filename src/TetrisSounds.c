@@ -2,7 +2,7 @@
 #include "ResourceRegistry.h"
 #include <SDL2/SDL_mixer.h>
 
-static void on_collision_event(void* data);
+static void on_collision_event(void* event_data);
 static void on_button_selection_event(void* event_data);
 static void on_button_click_event(void* event_data);
 static void on_clear_line_event(void* line_clear);
@@ -17,12 +17,12 @@ static EventListener rotate_event = {.callback = &on_rotate_event, .type = ROTAT
 static EventListener click_event = {.callback = &on_button_click_event, .type = CLICK_BUTTON_EVENT};
 
 void register_sound_listeners() {
-    register_event(&collision_event);
-    register_event(&select_event);
-    register_event(&line_event);
-    register_event(&move_event);
-    register_event(&rotate_event);
-    register_event(&click_event);
+    sub_event_listener(&collision_event);
+    sub_event_listener(&select_event);
+    sub_event_listener(&line_event);
+    sub_event_listener(&move_event);
+    sub_event_listener(&rotate_event);
+    sub_event_listener(&click_event);
 }
 
 void init_music() {

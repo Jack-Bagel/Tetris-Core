@@ -24,6 +24,7 @@ set(PROJECT_SOURCE_FILES
     src/TetrisLogic.c
     src/TetrisRenderer.c
     src/TetrisSounds.c
+    src/TetrisIO.c
 
     src/scene/SceneHandler.c
     src/scene/MainMenuScene.c

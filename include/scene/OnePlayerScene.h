@@ -6,4 +6,4 @@
 #include <SDL2/SDL_video.h>
 
 extern void init_one_player(PlayableScene *p_scene);
-
+extern void register_one_player_listeners();

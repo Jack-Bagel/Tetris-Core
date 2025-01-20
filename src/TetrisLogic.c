@@ -1,6 +1,7 @@
 #include "TetrisLogic.h"
 #include "EventListener.h"
 #include "TetrisUtils.h"
+#include "TetrisIO.h"
 #include "Pieces.h"
 #include "TetrisTime.h"
 #include <SDL2/SDL.h>
@@ -25,6 +26,7 @@ static void clear_line(TetrisBoard *self, int line);
 static void game_over(TetrisBoard *self);
 static void update_level(TetrisBoard *self);
 static void update_speed(TetrisBoard *self);
+static void update_top_score(TetrisBoard *self);
 
 // Merge these functions with their actions
 static bool can_rotate_clockwise(TetrisBoard *self);
@@ -41,6 +43,10 @@ int get_points(TetrisBoard *self) {
     return self->m_points;
 }
 
+int get_top_score(TetrisBoard *self) {
+    return self->m_top_score;
+}
+
 int get_level(TetrisBoard *self) {
     return self->m_current_level;
 }
@@ -53,7 +59,6 @@ bool get_game_over(TetrisBoard *self) {
     return self->m_is_game_over;
 }
 
-
 static bool init_tetris_board(TetrisBoard *self) {
 
     // Init grids
@@ -65,6 +70,7 @@ static bool init_tetris_board(TetrisBoard *self) {
 
     // init member variables
     init_tetris_time(&self->m_counter);
+    read_top_score(&self->m_top_score, SAVE_FILE);
     self->m_game_start = false;
     self->m_is_game_over = false;
     self->m_offset = 6;
@@ -123,6 +129,9 @@ void tetris_loop(TetrisBoard *self) {
 
             // Clear the possible lines
             clear_lines(self);
+
+            // Updates the top score
+            update_top_score(self);
 
             // Update last tetris grid
             memcpy(self->m_last_tetris_grid.grid, self->m_tetris_grid.grid, sizeof(int) * BOARD_HEIGHT * BOARD_WIDTH);
@@ -200,7 +209,8 @@ static void game_over(TetrisBoard *self) {
     for (int j=2; j < BOARD_WIDTH - 2; j++) {
         if (self->m_last_tetris_grid.grid[2][j] != 0 && !self->m_is_game_over) {
             self->m_is_game_over = true;
-            printf("GAME OVER\n");
+            pub_game_over_event(&self->m_top_score);
+            pub_game_restart_event(NULL);
         }
     }
 }
@@ -287,6 +297,7 @@ static void generate_new_piece(TetrisBoard *self) {
 
     self->m_piece = self->m_next_piece;
     self->m_next_piece = create_piece(random_piece);
+    pub_new_piece_event(&self->m_piece);
     
     // If same piece twice, reroll
     if (self->m_next_piece.type == self->m_piece.type) {
@@ -300,6 +311,11 @@ static void generate_new_piece(TetrisBoard *self) {
     self->m_increment_seed++;
 }
 
+static void update_top_score(TetrisBoard *self) {
+    if (self->m_top_score < self->m_points) {
+        self->m_top_score = self->m_points;
+    }
+}
 
 void reset_game_seed() {
     s_game_seed = time(NULL);
@@ -308,6 +324,7 @@ void reset_game_seed() {
 unsigned int get_game_seed() {
     return s_game_seed;
 }
+
 
 /** LEVELING AND SPEED **/
 static void update_level(TetrisBoard *self) {

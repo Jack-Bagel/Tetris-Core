@@ -7,7 +7,6 @@
 #include "EventListener.h"
 #include "SceneHandler.h"
 #include "TetrisInputEvent.h"
-#include "TetrisUtils.h"
 #include "ResourceRegistry.h"
 #include "TetrisSounds.h"
 #include "GameWorld.h"
@@ -43,7 +42,7 @@ bool initialize_game_world() {
     }
 
     // Initialization
-    p_window = SDL_CreateWindow("Tetris 95", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+    p_window = SDL_CreateWindow("TETRIS CORE", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
     p_renderer = SDL_CreateRenderer(p_window, -1, SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED);
     register_resources(p_renderer, resource_instance());
     init_scene();

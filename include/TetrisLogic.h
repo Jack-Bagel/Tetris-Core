@@ -23,7 +23,8 @@ typedef struct TetrisBoard {
     unsigned int m_seed;
     unsigned int m_increment_seed;
     int m_offset;
-    unsigned long m_points;
+    unsigned int m_points;
+    unsigned int m_top_score;
     unsigned int m_lines_cleared;
     unsigned int m_total_lines_cleared;
     unsigned int m_current_level;
@@ -38,6 +39,7 @@ extern void reset_game_seed();
 extern unsigned int get_game_seed();
 extern Piece get_next_piece(TetrisBoard *self);
 extern int get_points(TetrisBoard *self);
+extern int get_top_score(TetrisBoard *self);
 extern int get_level(TetrisBoard *self);
 extern int get_total_lines(TetrisBoard *self);
 extern bool get_game_over(TetrisBoard *self);
